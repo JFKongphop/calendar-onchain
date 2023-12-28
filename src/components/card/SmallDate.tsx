@@ -8,6 +8,7 @@ import { addDaySelected } from '@/redux/slice/daySelected.slice';
 
 import type { FC } from 'react';
 import type { Dayjs } from 'dayjs';
+import type { DayEventParams } from '@/type';
 
 interface ISmallDate {
   day: Dayjs;
@@ -24,23 +25,25 @@ const SmallDate: FC<ISmallDate> = ({
   onDaySelected
 }) => {
   const navigate = useNavigate();
-  const { day_date } = useParams();
   const dispatch = useDispatch();
   const daySelected = useSelector(daySelectedData)
+  const { calendarIndex, date } = useParams<DayEventParams>();
 
   const dateEventHandler = (day: Dayjs) => {
     dispatch(addDaySelected(day))
     const datePage = dayjs(day).format('MMM-DD-YYYY').toLocaleLowerCase()
 
-    navigate(`/calendar/date/${datePage}`);
+    navigate(`/calendar-event/${calendarIndex}/date/${datePage}`);
   }
+
+  // console.log(date)
 
   const getDayClass = (day: Dayjs) => {
     const format = 'DD-MM-YY';
     const currentDayInCalendar = day.format(format);
     const selectDay = daySelected.format(format);
     const today = dayjs().format(format);
-    const dayParamUrl = dayjs(day_date).format(format).toLowerCase();
+    const dayParamUrl = dayjs(date).format(format).toLowerCase();
   
     let scheduleDay: string = '';
     if (daySelectedEvent) {

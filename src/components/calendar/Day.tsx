@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 import { useSelector } from "@/redux/store";
@@ -13,6 +13,8 @@ import type { FC } from "react";
 import type { Dayjs } from "dayjs";
 import type{ CalendarEvent } from "./type/type";
 import { rangeTimeData } from "@/redux/selector/rangeTime.selector";
+import { useContractCalendar, useEthersSigner } from "@/wagmi";
+import { EventSchedule, MonthEventParams } from "@/type";
 
 interface IDay {
   day: Dayjs;
@@ -23,26 +25,45 @@ const Day:FC<IDay> = ({
   day, 
   rowIdx,
 }) => {
-  const [dayEvents, setDayEvents] = useState<CalendarEvent[]>([]);
+  const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const events = useSelector(allEventData);
   const rangeTime = useSelector(rangeTimeData)
+  const signer = useEthersSigner()
+  const calendarContract = useContractCalendar();
+  const { calendarIndex, calendarTitle } = useParams<MonthEventParams>()
+  const { pathname } = useLocation()
 
   useEffect(() => {
-    const eventEachDay: CalendarEvent[] = events.filter(
-      (evt) => 
-        dayjs(evt.start_event).startOf('day').valueOf() 
-        === dayjs(day).startOf('day').valueOf()
-    )
-    setDayEvents(eventEachDay);
-  }, [rangeTime]);
+    (async () => {
+      console.log(rangeTime)
+      const data =  await calendarContract.getEventSchedule(0, rangeTime);
+      console.log(data)
+      const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
+        id: Number(event[0]),
+        start_event: Number(event[1]),
+        end_event: Number(event[2]),
+        title: event[3],
+      }));
+
+      const eventEachDay = destructureEventSchedules.filter(
+        (evt) => 
+          dayjs(evt.start_event).startOf('day').valueOf() 
+          === dayjs(day).startOf('day').valueOf()
+      );
+
+      setDayEvents(eventEachDay);
+    })();
+  }, [signer, rangeTime])
+
+  
+  
 
   const dateEventHandler = () => {
     dispatch(addDaySelected(day))
     const datePage = dayjs(day).format('MMM-DD-YYYY').toLowerCase()
   
-    navigate(`/calendar/date/${datePage}`);
+    navigate(`/calendar-event/${calendarIndex}/${calendarTitle}/date/${datePage}`);
   }
 
   const getCurrentDayClass = () => {

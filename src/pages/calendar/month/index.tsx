@@ -91,7 +91,7 @@ import { getMonth } from '@/utils/getMonth';
 import EventRequest from '@/lib/event-request';
 
 import Month from '@/components/calendar/Month';
-import CreateMeet from '@/components/modal/CreateMeet';
+import CreateMeet from '@/components/modal/CreateEventScheduleCalendarModal';
 import CalendarHeader from '@/components/calendar/CalendarHeader';
 import Sidebar from '@/components/calendar/Sidebar';
 

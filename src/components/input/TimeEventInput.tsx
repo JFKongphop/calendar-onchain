@@ -7,6 +7,7 @@ import { timeRatioSelector } from '@/components/calendar/type/initialState';
 import type { ChangeEvent, FC } from 'react';
 import type { Control } from 'react-hook-form';
 import type { IMeetEvent, TimeInputValue, TimeRatio } from '@/components/calendar/type/type';
+import TimeRatioSelectorDropdown from '../dropdown/TimeRatioSelectorDropdown';
 
 interface ITimeEventInput {
   title: string;
@@ -49,7 +50,7 @@ const TimeEventInput: FC<ITimeEventInput> = ({
       <div className="flex flex-row gap-2 relative">
         <div className="flex flex-row">
           <div 
-            className="w-12 h-8 border-2 rounded-md border-standswork-zeus-black-100/30 flex justify-center items-center cursor-pointer"
+            className="w-12 h-8 border-2 border-calendar-main-theme rounded-md flex justify-center items-center cursor-pointer font-semibold"
           >
             <Controller
               name={name}
@@ -71,19 +72,23 @@ const TimeEventInput: FC<ITimeEventInput> = ({
             />
           </div>
           <div 
-            className="flex flex-col text-standswork-zeus-black-100/30"
+            className="flex flex-col text-calendar-main-theme"
           >
             <RxDotFilled/>
             <RxDotFilled/>
           </div>
-          <div 
+          <TimeRatioSelectorDropdown 
+            timeRatioSelected={timeRatioSelected}
+            onRatioSelector={onRatioSelector}
+          />
+          {/* <div 
             className="w-12 h-8 border-2 rounded-md border-standswork-zeus-black-100/30 flex justify-center items-center cursor-pointer"
             onClick={ontoggleTimeSelector}
           >
             {timeRatioSelected}
-          </div>
+          </div> */}
         </div>
-        {openTimeRatio && 
+        {/* {openTimeRatio && 
           (
             <div 
               className="w-12 border border-standswork-zeus-black-100/30 absolute right-0 bg-white z-20 top-10 rounded-md"
@@ -99,7 +104,7 @@ const TimeEventInput: FC<ITimeEventInput> = ({
               }
             </div>
           )
-        }
+        } */}
       </div>
     </div>
   )

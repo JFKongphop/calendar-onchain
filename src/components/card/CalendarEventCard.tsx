@@ -11,7 +11,7 @@ const CalendarEventCard: FC<ICalendarEventCard> = ({
 }) => {
   return (
     <main
-      className="flex w-full flex-col gap-2 relative border overflow-y-auto"
+      className="flex w-full flex-col gap-2 relative overflow-y-auto border-0 border-b-2 border-calendar-main-theme"
     >
       <div 
         className="flex flex-col"

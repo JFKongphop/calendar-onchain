@@ -44,7 +44,7 @@ const CalendarHeader = () => {
   useEffect(() => {
     const path = location.pathname.split('/');
     const lenghtOfPathElement = path.length;
-    if(path[lenghtOfPathElement - 1] === 'event') {
+    if(path[lenghtOfPathElement - 1] === 'calendar-event') {
       setShowTimeRangeHandler(false);
     }
     else {

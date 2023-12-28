@@ -3,13 +3,13 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 
 interface RangeTimeState {
-  rangeTime: [number, number]
+  rangeTime: string
 }
 
 const startTime = dayjs().startOf('month').valueOf();
 const endTime = dayjs().endOf('month').valueOf()
 const initialRangeTimeState: RangeTimeState = {
-  rangeTime: [0, 0]
+  rangeTime: ''
 }
 
 const rangeTimeSlice = createSlice({
@@ -17,7 +17,7 @@ const rangeTimeSlice = createSlice({
   initialState: initialRangeTimeState,
   reducers: {
     addRangeTime: (state, { payload }: PayloadAction<[number, number]>) => {
-      state.rangeTime = payload;
+      state.rangeTime = `${payload[0]}-${payload[1]}`;
     }
   }
 })

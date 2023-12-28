@@ -12,5 +12,6 @@ Object.entries(ENV).map((env) => {
 
 // env name variable
 export const { VITE_API_ENDPOINT } = parseENV;
-const { VITE_CALENDAR_ADDRESS } = parseENV;
+const { VITE_CALENDAR_ADDRESS, VITE_HOLESKY_ADDRESS } = parseENV;
 export const CALENDAR_ADDRESS = VITE_CALENDAR_ADDRESS as Address
+export const CALENDAR_HOLESKY = VITE_HOLESKY_ADDRESS as Address

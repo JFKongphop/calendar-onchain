@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -20,21 +20,64 @@ import type { Dayjs } from 'dayjs';
 import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
 
 import { toggleCreateEventModal } from '@/redux/slice/showCreateEventModal.slice';
+import { DayEventParams, ErrorInput, MonthEventParams } from '@/type';
+import { useContractCalendar } from '@/wagmi';
+import { LoadingOutlined } from '@ant-design/icons';
+
+import { SetValueProps } from '@/type';
+import { utils } from 'ethers';
+import { useSelector } from '@/redux/store';
+import { monthIndexData } from '@/redux/selector/monthIndex.selector';
+import { getMonth } from '@/utils/getMonth';
+import { addRangeTime } from '@/redux/slice/rangeTime.slice';
 
 
-interface ICreateMeet { showModal: boolean; }
+interface ICreateEventScheduleCalendarModal { showModal: boolean; }
 
-const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
+const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = ({ showModal }) => {
   const [timeRatioStart, setTimeRatioStart] = useState<TimeRatio>('00');
   const [timeRatioEnd, setTimeRatioEnd] = useState<TimeRatio>('00');
   const [openTimeRatioStart, setOpenTimeRatioStart] = useState<boolean>(false);
   const [openTimeRatioEnd, setOpenTimeRatioEnd] = useState<boolean>(false);
   const [daySelectorEvent, setDaySelectorEvent] = useState<Dayjs>(dayjs());
+  const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
+  const [monthRange, setMonthRange] = useState<string>('');
 
-  const { day_date } = useParams();
+  
+  const [messageReturn, setMessageReturn] = useState<string>('');
+  const [changeLoading, setChangeLoading] = useState<boolean>(false);
+  const [errorInput, setErrorInput] = useState<ErrorInput>({ status: false, message: '' });
+
+  const { calendarTitle, calendarIndex } = useParams<DayEventParams>();
+
+  const calendarContract = useContractCalendar();
   
 
   const dispatch = useDispatch()
+
+  const monthIndex = daySelectorEvent.month()
+
+  useEffect(() => {
+    setCurrentMonth(getMonth(monthIndex));
+  }, [monthIndex]);
+
+  useEffect(() => {
+    const startTimeMonthArray = currenMonth[0][0].startOf('day').valueOf();
+    const endTimeMonthArray = currenMonth[4][6].endOf('day').valueOf();
+
+    const monthRange = `${startTimeMonthArray}-${endTimeMonthArray}`;
+    setMonthRange(monthRange);
+  }, [currenMonth]);
+
+//   {
+//     "id": 1703778706170,
+//     "startEvent": 1703696400000,
+//     "endEvent": 1703698200000,
+//     "calendarIndex": "0",
+//     "calendarEventTitle": "titlegroup1",
+//     "title": "test1",
+//     "monthRange": "1700931600000-1703955599999"
+// }
 
 
   const { 
@@ -42,8 +85,21 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
     handleSubmit,
     reset,
     watch,
+    setValue,
     control,
   } = useForm<IMeetEvent>({defaultValues});
+
+  const setValueProps =  setValue as SetValueProps<IMeetEvent>;
+  
+  const closeModalHandler = () => {
+    setErrorInput({ status: false, message: '' });
+    setChangeLoading(false);
+    reset(defaultValues);
+    setTimeRatioStart('00');
+    setTimeRatioEnd('00');
+    setDaySelectorEvent(dayjs())
+    dispatch(toggleCreateEventModal(false));
+  }
 
   const onSubmit = async (data: IMeetEvent) => {
     const {
@@ -52,70 +108,114 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
       endHour
     } = data;
 
-    const calendarEvent = {
-      title,
-      id: Date.now(),
-      start_event: convertDateToUnix(
+    if (title.length === 0) {
+      return setErrorInput({ 
+        status: true, 
+        message: 'please fill title!' 
+      });
+    }
+
+    try {
+      const id = Date.now();
+      const startEvent = convertDateToUnix(
         startHour, 
         timeRatioStart, 
         daySelectorEvent
-      ),
-      end_event: convertDateToUnix(
+      );
+      const endEvent = convertDateToUnix(
         endHour, 
         timeRatioEnd, 
         daySelectorEvent
-      ),
-    };
+      );
+      const calendarEventTitle = calendarTitle?.replaceAll('-', ' ');
 
-    const response = await EventRequest.post('/calendar', calendarEvent)
-    console.log(response.data)
+      if (startEvent >= endEvent) {
+        return setErrorInput({ 
+          status: true, 
+          message: 'please change event time!' 
+        });
+      }
 
-    console.log(calendarEvent)
-    
-    // if (selectedEvent) {
-    //   dispatchCalEvent({ type: "update", payload: calendarEvent });
-    // } else {
-    //   dispatchCalEvent({ type: "push", payload: calendarEvent });
-    // }
-
-    // setShowEventModal(false);
-    dispatch(toggleCreateEventModal(false))
-
-    reset(defaultValues);
-    setTimeRatioStart('00');
-    setTimeRatioEnd('00');
+      currenMonth[0][0].startOf('day').valueOf()
+      currenMonth[4][6].endOf('day').valueOf()
+  
+      const startMonth = daySelectorEvent.startOf('month').valueOf();
+      const endMonth = daySelectorEvent.endOf('month').valueOf();
+      // const monthRange = `${startMonth}-${endMonth}`;
+  
+      setErrorInput({ status: false, message: '' });
+      setChangeLoading((loading) => !loading);
+      setMessageReturn('creating event in process');
+      const responseData = await calendarContract.addEventSchedule(
+        id,
+        startEvent,
+        endEvent,
+        calendarIndex,
+        calendarTitle,
+        title,
+        monthRange,
+      );
+      console.log({
+        id,
+        startEvent,
+        endEvent,
+        calendarIndex,
+        calendarEventTitle,
+        title,
+        monthRange,
+      })
+      setMessageReturn('created event successfully and waiting for set data...');
+  
+      responseData.wait();
+      closeModalHandler();
+    }
+    catch (e) {
+      console.log(e);
+      setChangeLoading(false);
+      setErrorInput({ status: true, message: 'something went wrong!' });
+      setTimeout(() => {
+        setErrorInput({ status: false, message: '' });
+        closeModalHandler();
+      }, 1500);
+    }
   }
 
   const toggleTimeRatioStart = () => {
     setOpenTimeRatioStart(!openTimeRatioStart);
   }
 
-  const timeRatioStartSelectorHandler = (time: TimeRatio) => {
+  const timeRatioStartSelectorHandler = useCallback((time: TimeRatio) => {
     toggleTimeRatioStart();
     setTimeRatioStart(time);
-  }
+  }, [])
 
   const toggleTimeRatioEnd = () => {
     setOpenTimeRatioEnd(!openTimeRatioEnd);
   }
 
-  const timeRatioEndSelectorHandler = (time: TimeRatio) => {
+  const timeRatioEndSelectorHandler = useCallback((time: TimeRatio) => {
     toggleTimeRatioEnd();
     setTimeRatioEnd(time);
-  }
-
-  const closeModalHandler = () => {
-    // setShowEventModal(false)
-    dispatch(toggleCreateEventModal(false))
-  }
+  }, [])
 
   const getDaySelectedHandler = (day: Dayjs) => {
+    // console.log(day)
     setDaySelectorEvent(day);
   }
 
-  useEffect(() => {
-    setDaySelectorEvent(dayjs(day_date))
-  }, [day_date]);
+  // useEffect(() => {
+  //   setDaySelectorEvent(dayjs(date))
+  // }, [date]);
+
+  // const [startHour, endHour] = watch(['startHour', 'endHour']);
+  // useEffect(() => {
+  //   if (startHour === endHour) {
+  //     setErrorInput({ 
+  //       status: true, 
+  //       message: 'please change event time!' 
+  //     })
+  //   }
+  // }, [endHour])
   
   const registerProps = register as unknown as UseFormRegister<IMeetEvent>;
   
@@ -162,7 +262,7 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
                   className="relative flex flex-col w-full items-center overflow-hidden bg-white p-4 rounded-xl gap-6"
                 >
                   <div 
-                    className="flex flex-row justify-between items-center w-full border-b-2 border-calendar-minor-theme pb-2"
+                    className="flex flex-row justify-between items-center w-full border-b-2 border-calendar-main-theme pb-2"
                   >
                     <p className="font-semibold text-xl">Create Event Schedule</p>
                     <button
@@ -188,7 +288,7 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
                     </label>
                     <input
                       type="text" 
-                      className="w-full p-2 focus:outline-none border-2 border-calendar-minor-theme rounded-md"
+                      className="w-full p-2 focus:outline-none border-2 border-calendar-main-theme rounded-md"
                       {...register('title')}
                     />
                   </div>
@@ -218,9 +318,42 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
                     onDaySelected={getDaySelectedHandler}
                     daySelectedEvent={daySelectorEvent}
                   />
+                  {
+                    changeLoading
+                    &&
+                    (
+                      <div 
+                        className="absolute bottom-[60px] text-xs flex flex-row gap-1"
+                      >
+                        <div className="flex items-center">
+                          <LoadingOutlined
+                            style={{
+                              fontSize: 10,
+                              color: '#1e293b',
+                            }}
+                            spin
+                            rev={undefined}
+                          />
+                        </div>
+                        <p>{messageReturn}</p>
+                      </div>                    
+                    )
+                  }
+                  {
+                    errorInput.status
+                    &&
+                    (
+                      <div 
+                        className="absolute bottom-[60px] text-red-500 font-semibold text-xs"
+                      >
+                        {errorInput.message}
+                      </div>
+                    )
+                  }
                   <div className="w-full">
                     <CreateEventButton 
                       title={'Create Event'}
+                      disabled={false}
                       onSubmitEvent={handleSubmit(onSubmit)}
                     />
                   </div>
@@ -234,5 +367,5 @@ const CreateMeet: FC<ICreateMeet> = ({ showModal }) => {
   );
 };
 
-export default CreateMeet;
+export default CreateEventScheduleCalendarModal;
 

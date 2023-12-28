@@ -21,7 +21,7 @@ import Sidebar from '@/components/calendar/Sidebar';
 import type { Dayjs } from 'dayjs';
 import type { CalendarEvent } from '@/components/calendar/type/type';
 
-const month = () => {
+const CalendarMonth = () => {
   const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
   const [loading, setLoading] = useState<boolean>(false)
   const dispatch = useDispatch();
@@ -41,6 +41,8 @@ const month = () => {
       currenMonth[4][6].endOf('day').valueOf()
     ]))
   }, [currenMonth]);
+
+  console.log(rangeTime)
 
   return (
     <>
@@ -63,4 +65,4 @@ const month = () => {
   )
 }
 
-export default month;
+export default CalendarMonth;

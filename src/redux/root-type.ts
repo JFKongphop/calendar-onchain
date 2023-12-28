@@ -21,7 +21,7 @@ export interface IMonthIndexState {
 
 /* --- ADD RANGE TIME --- */
 export interface IRangeTimeState {
-  rangeTime: [number, number];
+  rangeTime: string;
 }
 
 /* --- ADD DAY SELECTED --- */

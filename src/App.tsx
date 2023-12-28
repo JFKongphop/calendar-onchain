@@ -6,6 +6,13 @@ import { useAccount, useConnect, useContractRead } from 'wagmi';
 import { calendarABI } from './abi/calendar';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Index from './pages';
+import CalendarEvent from './pages/calendar-event';
+import CalendarMonth from './pages/calendar-month';
+import CalendarDate from './pages/calendar-date';
+import Error from './pages/error';
+
 
 const App = () => {
 
@@ -72,13 +79,22 @@ const App = () => {
     }
   }, []);
 
-
-
-
   return (
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <Routes>
+      <Route path='/'>
+        <Route index element={<Index/>}/>
+        <Route path='calendar-event'>
+          <Route index element={<CalendarEvent/>}/>
+          <Route path=':calendarIndex'>
+            <Route path=':calendarTitle'>
+              <Route path='month/:month' element={<CalendarMonth/>} />
+              <Route path='date/:date' element={<CalendarDate/>} />
+            </Route>
+          </Route>
+        </Route>
+      </Route>
+      <Route path='*' element={<Error/>}/>
+    </Routes>
   )
 }
 

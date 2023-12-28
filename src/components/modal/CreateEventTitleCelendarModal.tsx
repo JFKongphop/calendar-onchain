@@ -19,12 +19,12 @@ import { calendarABI } from '@/abi/calendar';
 import useDebounce from '@/hook/useDebounce';
 
 
-interface ICreateTitleCelendarModal { 
+interface ICreateEventTitleCelendarModal { 
   showModal: boolean;
   onCloseModal: () => void;
 }
 
-const CreateTitleCelendarModal: FC<ICreateTitleCelendarModal> = ({ 
+const CreateEventTitleCelendarModal: FC<ICreateEventTitleCelendarModal> = ({ 
   showModal,
   onCloseModal
 }) => {
@@ -140,4 +140,4 @@ const CreateTitleCelendarModal: FC<ICreateTitleCelendarModal> = ({
   );
 };
 
-export default CreateTitleCelendarModal;
+export default CreateEventTitleCelendarModal;

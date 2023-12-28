@@ -7,8 +7,8 @@ import { useEthersSigner, useContractCalendar } from '@/wagmi';
 
 import CreateEventButton from '@/components/button/CreateEventButton'
 import CalendarHeader from '@/components/calendar/CalendarHeader'
-import CalendarEventHandlerModal from '@/components/modal/CalendarEventHandlerModal';
-import CreateTitleCelendarModal from '@/components/modal/CreateTitleCelendarModal';
+import CreateEventTitleCelendarModal from '@/components/modal/CalendarEventHandlerModal';
+import CreateTitleCelendarModal from '@/components/modal/CreateEventTitleCelendarModal';
 import EventCalendarCard from '@/components/card/EventCalendarCard';
 import CalendarLeaveEventModal from '@/components/modal/CalendarLeaveEventModal';
 import ParticipationCalendarCard from '@/components/card/ParticipationCalendarCard';
@@ -21,7 +21,7 @@ import type{ CalendarHandler, EventParticipationTitle, EventTitle } from '@/type
 // 0xCd004500B361CFABaACE36963C990b5440E79400
 // 0x344255C14CBEf9BC9b0301d282b08152819866Fd
 
-const event = () => {
+const CalendarEvent = () => {
   const [eventTitles, setEventTitles] = useState<EventTitle[]>([]);
   const [eventParticipationTitles, setEventParticipationTitles] = useState<EventParticipationTitle[]>([]);
   const [eventTitle, setEventTitle] = useState<EventTitle>();
@@ -104,6 +104,13 @@ const event = () => {
     }, [signer, leaveParticipationEventSuccess]);
   }
 
+  useEffect(() => {
+    (async () => {
+      const data =  await calendarContract.getEventSchedule(0, "1701363600000-1704041999999")
+      console.log(data)
+    })()
+  }, [signer])
+
   return (
     <>
       <div className="h-screen flex flex-col w-full mb-20 pb-20">
@@ -115,7 +122,7 @@ const event = () => {
           eventTitles.length > 0
           &&
           (
-            <CalendarEventHandlerModal 
+            <CreateEventTitleCelendarModal 
               calendarEventData={eventTitle!}
               calendarIndex={currentCalendarIndex}
               type={calendarHandlerType}
@@ -258,4 +265,4 @@ const event = () => {
   )
 }
 
-export default event;
+export default CalendarEvent;

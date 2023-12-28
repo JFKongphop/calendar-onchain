@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 import { configureChains, createConfig, useWalletClient } from 'wagmi';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { goerli } from 'wagmi/chains';
+import { goerli, holesky } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { ethers, providers } from 'ethers'
 import type { WalletClient } from 'wagmi'
 
 import { calendarABI } from '@/abi/calendar';
-import { CALENDAR_ADDRESS } from './configs/enviroment';
+import { CALENDAR_ADDRESS, CALENDAR_HOLESKY } from './configs/enviroment';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [goerli],
+  [goerli, holesky],
   [publicProvider()]
 );
  
@@ -40,13 +40,15 @@ export const useEthersSigner = ({ chainId }: { chainId?: number } = {}) => {
 export const useContractCalendar = () => {
   const signer = useEthersSigner();
   const calendarContract = new ethers.Contract(
-    CALENDAR_ADDRESS,
+    CALENDAR_HOLESKY,
     calendarABI,
     signer
   );
 
   return calendarContract;
 };
+
+console.log(CALENDAR_HOLESKY)
 
 export const config = createConfig({
   autoConnect: true,

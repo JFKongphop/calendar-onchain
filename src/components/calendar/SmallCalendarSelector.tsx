@@ -25,9 +25,9 @@ const SmallCalendarSelector: FC<ISmallCalendarSelector> = ({
   const [currentMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
   const [monthIndex, setMonthIndex] = useState<number>(dayjs().month());
 
-  const { day_date } = useParams();
+  // const { day_date } = useParams();
 
-  console.log(day_date)
+  // console.log(day_date)
 
   useEffect(() => {
     setCurrentMonth(getMonth(currentMonthIdx));
@@ -63,7 +63,7 @@ const SmallCalendarSelector: FC<ISmallCalendarSelector> = ({
   
   return (
     <div
-      className="flex flex-col gap-4 border-2 border-calendar-minor-theme rounded-md w-full p-2"
+      className="flex flex-col gap-4 border-2 border-calendar-main-theme rounded-md w-full p-2"
     >
       <header className="flex justify-between">
         <MonthSlideHandler 

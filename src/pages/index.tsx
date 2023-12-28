@@ -8,7 +8,7 @@ import {
 } from '@headlessui/react';
 import CalendarHeader from '@/components/calendar/CalendarHeader';
 
-const index = () => {
+const Index = () => {
   console.log(dayjs());
 
   console.log(getMonth())
@@ -21,4 +21,4 @@ const index = () => {
   )
 }
 
-export default index;
+export default Index;
