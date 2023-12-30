@@ -2,9 +2,9 @@ import { Address } from "wagmi";
 import type { 
   FieldValues, 
   UseFormRegister, 
-  UseFormWatch,
   UseFormSetValue
 } from "react-hook-form";
+import { ShortMonth } from "./utils/shortMonthToNumber";
 
 export type EventTitle = {
   title: string;
@@ -31,15 +31,10 @@ export type ErrorInput = {
   message: string 
 };
 
-export type MonthEventParams = { 
+export type EventParams = { 
   calendarIndex: string; 
   calendarTitle: string; 
-  month: string 
-};
-
-export type DayEventParams = { 
-  calendarIndex: string; 
-  calendarTitle: string; 
+  month: ShortMonth;
   date: string 
 };
 

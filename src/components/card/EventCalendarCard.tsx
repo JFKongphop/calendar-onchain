@@ -1,4 +1,4 @@
-import type { CalendarHandler, EventTitle, MonthEventParams } from '@/type';
+import type { CalendarHandler, EventTitle } from '@/type';
 import { FC } from 'react';
 import CalendarEventHandlerDropdown from '@/components/dropdown/CalendarEventHandlerDropdown';
 import { useNavigate, useParams } from 'react-router-dom';

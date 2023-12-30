@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -15,22 +15,20 @@ import CreateMeet from '@/components/modal/CreateEventScheduleCalendarModal';
 import Sidebar from '@/components/calendar/Sidebar';
 import CalendarEventCard from '@/components/card/CalendarEventCard';
 
-import { DayEventParams, EventSchedule } from '@/type';
-import dayjs, { Dayjs } from 'dayjs';
+import { EventParams, EventSchedule } from '@/type';
+import dayjs from 'dayjs';
 import { useContractCalendar, useEthersSigner } from '@/wagmi';
-import { getMonth } from '@/utils/getMonth';
 import { LoadingOutlined } from '@ant-design/icons';
+import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
+import { compareSameDay } from '@/utils/compareDayjs';
 
 const CalendarDate = () => {
   const [scheduleInnerHeight, setScheduleInnerHeight] = useState<number>(0);
   const showCreateEventModal = useSelector(showCreateEventModalData)
-  const { calendarIndex, calendarTitle, date } = useParams<DayEventParams>()
+  const { date } = useParams<EventParams>()
   const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
-  const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
   const [loading, setLoading] = useState<boolean>(false);
-  const [eventSchedule, setEventSchedule] = useState<EventSchedule>();
   const [eventHandlerSuccess, setEventHandlerSuccess] = useState<string>('');
-
 
   const dispatch = useDispatch();
   const rangeTime = useSelector(rangeTimeData);
@@ -39,14 +37,8 @@ const CalendarDate = () => {
   const monthIndex = dayjs(date).month()
 
   useEffect(() => {
-    setCurrentMonth(getMonth(monthIndex));
-  }, [monthIndex]);
-
-  useEffect(() => {
-    const startTimeMonthArray = currenMonth[0][0].startOf('day').valueOf();
-    const endTimeMonthArray = currenMonth[4][6].endOf('day').valueOf();
-
-    dispatch(addRangeTime([startTimeMonthArray, endTimeMonthArray]))
+    const rangeTimeArray = monthArrayToRangeTime(monthIndex);
+    dispatch(addRangeTime(rangeTimeArray))
   }, [monthIndex]);
 
   const scheduleInnerRef = useRef<any>();
@@ -60,9 +52,7 @@ const CalendarDate = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      console.log(rangeTime)
       const data =  await calendarContract.getEventSchedule(0, rangeTime);
-      console.log(data)
       const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
         id: Number(event[0]),
         start_event: Number(event[1]),
@@ -71,8 +61,7 @@ const CalendarDate = () => {
       }));
 
       const eventEachDay = destructureEventSchedules.filter(
-        (evt) => 
-          dayjs(evt.start_event).isSame(date, 'day')
+        (evt) => compareSameDay(evt.start_event, date!)
       );
 
       setDayEvents(eventEachDay);
@@ -80,15 +69,10 @@ const CalendarDate = () => {
     })();
   }, [signer, rangeTime, eventHandlerSuccess])
 
-  const getEventSchedule = useCallback((eventSchedule: EventSchedule) => {
-    setEventSchedule(eventSchedule)
-  }, []);
-
-
   const getHandlerSuccess = (hash: string) => {
     setEventHandlerSuccess(hash);
   }
-  
+
   return (
     <div 
       className="h-screen"
@@ -128,8 +112,7 @@ const CalendarDate = () => {
                   <EventList 
                     key={data.id}
                     eventSchedule={data} 
-                    onGetEventSchedule={getEventSchedule}
-                    onHandlerSuccess={getHandlerSuccess}             
+                    onHandlerSuccess={getHandlerSuccess} 
                   />
                 ))
               }

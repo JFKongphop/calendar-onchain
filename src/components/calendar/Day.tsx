@@ -1,20 +1,15 @@
-import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
-import { useSelector } from "@/redux/store";
 import { addDaySelected } from "@/redux/slice/daySelected.slice";
-import { allEventData } from "@/redux/selector/event.selector";
 
 import ShortEventList from "@/components/card/ShortEventList";
 
 import type { FC } from "react";
 import type { Dayjs } from "dayjs";
-import type{ CalendarEvent } from "./type/type";
-import { rangeTimeData } from "@/redux/selector/rangeTime.selector";
-import { useContractCalendar, useEthersSigner } from "@/wagmi";
-import { EventSchedule, MonthEventParams } from "@/type";
+import { EventSchedule, EventParams } from "@/type";
+import { compareSameDay } from "@/utils/compareDayjs";
 
 interface IDay {
   day: Dayjs;
@@ -27,46 +22,13 @@ const Day:FC<IDay> = ({
   rowIdx,
   eventSchedule,
 }) => {
-  // const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const rangeTime = useSelector(rangeTimeData)
-  const signer = useEthersSigner()
-  const calendarContract = useContractCalendar();
-  const { calendarIndex, calendarTitle } = useParams<MonthEventParams>()
-
-  // useEffect(() => {
-  //   (async () => {
-  //     if (rangeTime) {
-  //       console.log(rangeTime)
-  //       const data =  await calendarContract.getEventSchedule(0, rangeTime);
-  //       console.log(data[2])
-  //       const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
-  //         id: Number(event[0]),
-  //         start_event: Number(event[1]),
-  //         end_event: Number(event[2]),
-  //         title: event[3],
-  //       }));
-  
-        // const eventEachDay = destructureEventSchedules.filter(
-        //   (evt) => 
-        //     dayjs(evt.start_event).startOf('day').valueOf() 
-        //     === dayjs(day).startOf('day').valueOf()
-        // );
-  //       setDayEvents(eventEachDay);
-  //     }
-  //   })();
-  // }, [signer, rangeTime])
+  const { calendarIndex, calendarTitle } = useParams<EventParams>()
 
   const dayEvents: EventSchedule[] = eventSchedule.filter(
-    (evt) =>
-      dayjs(evt.start_event).isSame(day, 'day')
+    (evt) => compareSameDay(evt.start_event, day)
   )
-
-  console.log(eventSchedule)
-
-
-
   
   const dateEventHandler = () => {
     dispatch(addDaySelected(day))

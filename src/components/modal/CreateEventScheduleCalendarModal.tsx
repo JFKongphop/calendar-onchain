@@ -11,7 +11,6 @@ import SmallCalendarSelector from '@/components/calendar/SmallCalendarSelector';
 import CreateEventButton from '@/components/button/CreateEventButton';
 import { defaultValues } from "@/components/calendar/type/initialState";
 
-import EventRequest from '@/lib/event-request';
 import { convertDateToUnix } from '@/utils/convertDateToUnix';
 
 import type { FC } from 'react'
@@ -20,76 +19,45 @@ import type { Dayjs } from 'dayjs';
 import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
 
 import { toggleCreateEventModal } from '@/redux/slice/showCreateEventModal.slice';
-import { DayEventParams, ErrorInput, MonthEventParams } from '@/type';
+import { DayEventParams, ErrorInput } from '@/type';
 import { useContractCalendar } from '@/wagmi';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { SetValueProps } from '@/type';
-import { utils } from 'ethers';
-import { useSelector } from '@/redux/store';
-import { monthIndexData } from '@/redux/selector/monthIndex.selector';
-import { getMonth } from '@/utils/getMonth';
+import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { addRangeTime } from '@/redux/slice/rangeTime.slice';
+import { rangeTimeData } from '@/redux/selector/rangeTime.selector';
+import { useSelector } from '@/redux/store';
 
 
-interface ICreateEventScheduleCalendarModal { showModal: boolean; }
+interface ICreateEventScheduleCalendarModal { 
+  showModal: boolean; 
+}
 
 const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = ({ showModal }) => {
   const [timeRatioStart, setTimeRatioStart] = useState<TimeRatio>('00');
   const [timeRatioEnd, setTimeRatioEnd] = useState<TimeRatio>('00');
-  const [openTimeRatioStart, setOpenTimeRatioStart] = useState<boolean>(false);
-  const [openTimeRatioEnd, setOpenTimeRatioEnd] = useState<boolean>(false);
   const [daySelectorEvent, setDaySelectorEvent] = useState<Dayjs>(dayjs());
-  const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
-  const [monthRange, setMonthRange] = useState<string>('');
-
-  
   const [messageReturn, setMessageReturn] = useState<string>('');
   const [changeLoading, setChangeLoading] = useState<boolean>(false);
   const [errorInput, setErrorInput] = useState<ErrorInput>({ status: false, message: '' });
 
-  const { calendarTitle, calendarIndex } = useParams<DayEventParams>();
-
-  const calendarContract = useContractCalendar();
-  
-
   const dispatch = useDispatch()
-
+  const { calendarTitle, calendarIndex } = useParams<DayEventParams>();
+  const calendarContract = useContractCalendar();
+  const rangeTime = useSelector(rangeTimeData);
   const monthIndex = daySelectorEvent.month()
 
   useEffect(() => {
-    setCurrentMonth(getMonth(monthIndex));
-  }, [monthIndex]);
-
-  useEffect(() => {
-    const startTimeMonthArray = currenMonth[0][0].startOf('day').valueOf();
-    const endTimeMonthArray = currenMonth[4][6].endOf('day').valueOf();
-
-    const monthRange = `${startTimeMonthArray}-${endTimeMonthArray}`;
-    setMonthRange(monthRange);
-  }, [currenMonth]);
-
-//   {
-//     "id": 1703778706170,
-//     "startEvent": 1703696400000,
-//     "endEvent": 1703698200000,
-//     "calendarIndex": "0",
-//     "calendarEventTitle": "titlegroup1",
-//     "title": "test1",
-//     "monthRange": "1700931600000-1703955599999"
-// }
-
+    const rangeTimeArray = monthArrayToRangeTime(monthIndex);
+    dispatch(addRangeTime(rangeTimeArray));
+  }, [monthIndex])
 
   const { 
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     control,
   } = useForm<IMeetEvent>({defaultValues});
-
-  const setValueProps =  setValue as SetValueProps<IMeetEvent>;
   
   const closeModalHandler = () => {
     setErrorInput({ status: false, message: '' });
@@ -135,13 +103,6 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
           message: 'please change event time!' 
         });
       }
-
-      currenMonth[0][0].startOf('day').valueOf()
-      currenMonth[4][6].endOf('day').valueOf()
-  
-      const startMonth = daySelectorEvent.startOf('month').valueOf();
-      const endMonth = daySelectorEvent.endOf('month').valueOf();
-      // const monthRange = `${startMonth}-${endMonth}`;
   
       setErrorInput({ status: false, message: '' });
       setChangeLoading((loading) => !loading);
@@ -151,22 +112,14 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
         startEvent,
         endEvent,
         calendarIndex,
-        calendarTitle,
-        title,
-        monthRange,
-      );
-      console.log({
-        id,
-        startEvent,
-        endEvent,
-        calendarIndex,
         calendarEventTitle,
         title,
-        monthRange,
-      })
+        rangeTime,
+      );
+
       setMessageReturn('created event successfully and waiting for set data...');
-  
       await responseData.wait();
+      
       closeModalHandler();
     }
     catch (e) {
@@ -190,23 +143,8 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
   }, [])
 
   const getDaySelectedHandler = (day: Dayjs) => {
-    // console.log(day)
     setDaySelectorEvent(day);
   }
-
-  // useEffect(() => {
-  //   setDaySelectorEvent(dayjs(date))
-  // }, [date]);
-
-  // const [startHour, endHour] = watch(['startHour', 'endHour']);
-  // useEffect(() => {
-  //   if (startHour === endHour) {
-  //     setErrorInput({ 
-  //       status: true, 
-  //       message: 'please change event time!' 
-  //     })
-  //   }
-  // }, [endHour])
   
   const registerProps = register as unknown as UseFormRegister<IMeetEvent>;
   

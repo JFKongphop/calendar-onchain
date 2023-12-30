@@ -10,20 +10,47 @@ import CalendarRangeDropdown from "../dropdown/CalendarRangeDropdown";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { shortAddrss } from "@/utils/shortAddress";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { EventParams } from "@/type";
+import { shortMonthToNumber } from "@/utils/shortMonthToNumber";
 
 const CalendarHeader = () => {
   const [showTimeRangeHandler, setShowTimeRangeHandler] = useState<boolean>(false);
 
+  const { calendarIndex, calendarTitle, month, date } = useParams<EventParams>()
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const monthIndex = useSelector(monthIndexData);
 
   const handlePrevMonth = useCallback(() => {
+    let prevMonthIndex: number = dayjs().month();
+    if (month) {
+      prevMonthIndex = shortMonthToNumber(month) - 1;
+    }
+    if (date) {
+      prevMonthIndex = dayjs(date).month() - 1;
+    }
+
+    const prevMonth = dayjs().month(prevMonthIndex).format('MMM').toLowerCase();
+    const terminalURL = `/calendar-event/${calendarIndex}/${calendarTitle}/month/${prevMonth}`;
+    navigate(terminalURL);
     dispatch(addMonthIndexState(monthIndex - 1));
   }, [monthIndex])
   
   const handleNextMonth = useCallback(() => {
+    let nextMonthIndex: number = dayjs().month();
+    if (month) {
+      nextMonthIndex = shortMonthToNumber(month) + 1;
+    }
+    if (date) {
+      nextMonthIndex = dayjs(date).month() + 1;
+    }
+
+    const nextMonth = dayjs().month(nextMonthIndex).format('MMM').toLowerCase();
+    const terminalURL = `/calendar-event/${calendarIndex}/${calendarTitle}/month/${nextMonth}`;
+    navigate(terminalURL);
     dispatch(addMonthIndexState(monthIndex + 1));
   }, [monthIndex])
 
@@ -83,8 +110,8 @@ const CalendarHeader = () => {
         :
         (
           <h2 className="text-xl font-bold">
-          Calendar
-        </h2>
+            Calendar
+          </h2>
         )
       }
       <button 

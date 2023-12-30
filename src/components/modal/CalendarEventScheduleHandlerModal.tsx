@@ -1,4 +1,4 @@
-import { DayEventParams, ErrorInput, EventSchedule, MonthEventParams, TimeDurationHandler } from '@/type';
+import { ErrorInput, EventSchedule, EventParams, TimeDurationHandler } from '@/type';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
@@ -17,6 +17,9 @@ import { useDispatch } from 'react-redux';
 import { LoadingOutlined } from '@ant-design/icons';
 import { convertDateToUnix } from '@/utils/convertDateToUnix';
 import TimeEventInput from '../input/TimeEventInput';
+import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
+import { splitTimeHour } from '@/utils/splitTimeHour';
+import { compareSameTime } from '@/utils/compareDayjs';
 
 interface ICalendarEventScheduleHandlerModal {
   eventScheduleData: EventSchedule;
@@ -39,34 +42,17 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
   const [timeRatioStart, setTimeRatioStart] = useState<TimeRatio>('00');
   const [timeRatioEnd, setTimeRatioEnd] = useState<TimeRatio>('00');
   
-  const calendarContract = useContractCalendar();
-  const { calendarIndex, calendarTitle, date } = useParams<DayEventParams>();
-  const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
-  const rangeTime = useSelector(rangeTimeData);
   const dispatch = useDispatch();
+  const calendarContract = useContractCalendar();
+  const rangeTime = useSelector(rangeTimeData);
+  const { calendarIndex, date } = useParams<EventParams>();
   const daySelectorEdit = dayjs(date);
-
-
-  const monthIndex = dayjs(date).month()
+  const monthIndex = daySelectorEdit.month()
 
   useEffect(() => {
-    setCurrentMonth(getMonth(monthIndex));
-  }, [monthIndex]);
-
-  useEffect(() => {
-    const startTimeMonthArray = currenMonth[0][0].startOf('day').valueOf();
-    const endTimeMonthArray = currenMonth[4][6].endOf('day').valueOf();
-
-    dispatch(addRangeTime([startTimeMonthArray, endTimeMonthArray]))
-  }, [monthIndex]);
-
-
-
-  // uint256 store_index,
-  // uint256 event_id,
-  // string memory month_range
-
-
+    const rangeTimeArray = monthArrayToRangeTime(monthIndex);
+    dispatch(addRangeTime(rangeTimeArray));
+  }, [monthIndex])
 
   const {
     register,
@@ -79,14 +65,12 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
   const closeModalHandler = () => {
     setErrorInput({ status: false, message: '' });
     setChangeLoading(false);
-    reset(defaultValues);
     setTimeRatioStart('00');
     setTimeRatioEnd('00');
     setMessageReturn('');
+    reset(defaultValues);
     onCloseModal();
   }
-
-
 
   const editEventScheduleHandler = async (title: string, startEvent: number, endEvent: number) => {
     setMessageReturn('editing in process');
@@ -99,21 +83,14 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
       start_event: oldStartEvent,
       end_event: oldEndEvent
     } = eventScheduleData;
-    const daySelectorStartDay = dayjs(daySelectorEdit.startOf('day').valueOf());
 
     const newTitle = title === oldTitle ? oldTitle : title;
-    const newStartEvent = (
-      dayjs(startEvent).isSame(oldStartEvent)
-      || daySelectorStartDay.isSame(startEvent)
-    ) 
+    const newStartEvent = compareSameTime(startEvent, oldStartEvent)
       ? oldStartEvent 
       : startEvent;
-    const newEndEvent = (
-      dayjs(endEvent).isSame(oldEndEvent)
-      || daySelectorStartDay.isSame(endEvent)
-    )
+    const newEndEvent = compareSameTime(endEvent, oldEndEvent)
       ? oldEndEvent 
-      : endEvent; 
+      : endEvent;
 
     const data = await calendarContract.editEventSchedule(
       calendarIndex,
@@ -123,9 +100,10 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
       rangeTime,
       newTitle
     );
-    setMessageReturn('edited successfully and waiting for set data...');
 
-    await data.wait()
+    setMessageReturn('edited successfully and waiting for set data...');
+    await data.wait();
+
     closeModalHandler();
     setChangeLoading((loading) => !loading);
     onHandlerSuccess(data.hash);
@@ -160,15 +138,12 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
     setTimeRatioEnd(time);
   }, [])
 
-
-
   const onSubmit = async (data: IMeetEvent) => {
     const {
       title,
       startHour,
       endHour
     } = data;
-
     
     const startEvent = convertDateToUnix(
       startHour, 
@@ -196,9 +171,22 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
   }
 
   useEffect(() => {
-    setValue('title', eventScheduleData.title)
-  }, []);
-
+    if (showModal) {
+      const { 
+        title,
+        start_event, 
+        end_event 
+      } = eventScheduleData;
+      const [startHour, startMinute] = splitTimeHour(start_event);
+      const [endHour, endMinute] = splitTimeHour(end_event);  
+  
+      setTimeRatioStart(startMinute);
+      setTimeRatioEnd(endMinute);
+      setValue('startHour', startHour);
+      setValue('endHour', endHour);
+      setValue('title', title);
+    }
+  }, [showModal]);
 
   return (
     <Transition.Root 
@@ -208,7 +196,7 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
       <Dialog
         as="div"
         className="relative z-10 text-calendar-main-theme"
-        onClose={closeModalHandler}
+        onClose={onCloseModal}
       >
         <Transition.Child
           as={Fragment}
@@ -253,37 +241,44 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
                       <CgClose className="h-6 w-6 font-bold" />
                     </button>
                   </div>
-
-                  <div className="w-full">
-                    <TimeEventInput
-                      title={"From"}
-                      control={control}
-                      name={"startHour"}
-                      timeRatioSelected={timeRatioStart}
-                      onRatioSelector={timeRatioStartSelectorHandler}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <TimeEventInput
-                      title={"To"}
-                      control={control}
-                      name={"endHour"}
-                      timeRatioSelected={timeRatioEnd}
-                      onRatioSelector={timeRatioEndSelectorHandler}
-                    />
-                  </div>
-                  <div className="w-full gap-2 flex flex-col">
-                    <label 
-                      className="flex justify-start items-center text-md"
-                    >
-                      Title
-                    </label>
-                    <input
-                      type="text" 
-                      className="w-full p-2 focus:outline-none border-2 border-calendar-main-theme rounded-md"
-                      {...register('title')}
-                    />
-                  </div>
+                  {
+                    type === 'edit'
+                    &&
+                    (
+                      <>
+                        <div className="w-full">
+                          <TimeEventInput
+                            title={"From"}
+                            control={control}
+                            name={"startHour"}
+                            timeRatioSelected={timeRatioStart}
+                            onRatioSelector={timeRatioStartSelectorHandler}
+                          />
+                        </div>
+                        <div className="w-full">
+                          <TimeEventInput
+                            title={"To"}
+                            control={control}
+                            name={"endHour"}
+                            timeRatioSelected={timeRatioEnd}
+                            onRatioSelector={timeRatioEndSelectorHandler}
+                          />
+                        </div>
+                        <div className="w-full gap-2 flex flex-col">
+                          <label 
+                            className="flex justify-start items-center text-md"
+                          >
+                            Title
+                          </label>
+                          <input
+                            type="text" 
+                            className="w-full p-2 focus:outline-none border-2 border-calendar-main-theme rounded-md"
+                            {...register('title')}
+                          />
+                        </div>
+                      </>
+                    )
+                  }
                   {
                     type === 'remove' 
                     &&
@@ -330,21 +325,6 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
                       </div>
                     )
                   }
-                  {/* {
-                    eventScheduleData
-                    &&
-                    (
-                      <EventHandlerCard 
-                        type={type}
-                        changeLoading={changeLoading}
-                        errorInput={errorInput}
-                        messageReturn={messageReturn}
-                        addresses={calendarEventData.parctitipationAccount}
-                        register={registerProps}
-                        setValue={setValueProps}
-                      />
-                    )
-                  } */}
                   <div className="w-full">
                     <CreateEventButton 
                       title={'Confirm'}

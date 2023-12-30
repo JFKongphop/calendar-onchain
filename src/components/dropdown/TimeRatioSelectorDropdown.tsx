@@ -8,7 +8,7 @@ import { addDaySelected } from '@/redux/slice/daySelected.slice';
 
 import { Menu, Transition } from '@headlessui/react';
 import { IMeetEvent, RangeDay, TimeRatio } from '@/components/calendar/type/type';
-import { MonthEventParams } from '@/type';
+import { EventParams } from '@/type';
 import { timeRatioSelector } from '../calendar/type/initialState';
 import { UseFormSetValue } from 'react-hook-form';
 
@@ -27,7 +27,7 @@ const TimeRatioSelectorDropdown: FC<ITimeRatioSelectorDropdown> = ({
   const [rangeDay, setRangeDay] = useState<RangeDay>('Month');
 
   const dispatch = useDispatch();
-  const { calendarIndex } = useParams<MonthEventParams>();
+  const { calendarIndex } = useParams<EventParams>();
   
   const nagvigate = useNavigate();
   

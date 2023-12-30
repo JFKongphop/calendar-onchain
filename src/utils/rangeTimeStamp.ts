@@ -15,8 +15,6 @@ export const dayjsToTimestamp = (
   return [startTime, endTime];
 }
 
-
-
 export const monthToRangeTime = (month: number): RetrunMonthRange => {
   const startTime: number = dayjs().month(month).startOf('month').valueOf();
   const endTime: number = dayjs().month(month).endOf('month').valueOf();

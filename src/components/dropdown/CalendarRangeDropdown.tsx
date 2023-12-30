@@ -8,7 +8,7 @@ import { addDaySelected } from '@/redux/slice/daySelected.slice';
 
 import { Menu, Transition } from '@headlessui/react';
 import { RangeDay } from '@/components/calendar/type/type';
-import { MonthEventParams } from '@/type';
+import { EventParams } from '@/type';
 
 const timeSelector: RangeDay[] =  ['Today', 'Month'];
 
@@ -16,7 +16,7 @@ const CalendarRangeDropdown = () => {
   const [rangeDay, setRangeDay] = useState<RangeDay>('Month');
 
   const dispatch = useDispatch();
-  const { calendarIndex, calendarTitle } = useParams<MonthEventParams>();
+  const { calendarIndex, calendarTitle } = useParams<EventParams>();
   
   const nagvigate = useNavigate();
   

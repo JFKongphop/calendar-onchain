@@ -38,15 +38,6 @@ export interface IMeetEvent {
 
 export type TimeInputValue = 'startHour' | 'endHour';
 
-export type CalendarDetail = {
-  monthIndex: number,
-  daySelected: DaySelected,
-  showEventModal: boolean,
-  savedEvents: StateEvents[],
-  filteredEvents: StateEvents[],
-  showCreateMeet: boolean,
-}
-
 export type RangeDay = 'Today' | 'Month';
 
 export type CalendarEvent = {

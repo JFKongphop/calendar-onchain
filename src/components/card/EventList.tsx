@@ -8,13 +8,11 @@ import CalendarEventScheduleHandlerModal from '../modal/CalendarEventScheduleHan
 
 interface IEventList {
   eventSchedule: EventSchedule;
-  onGetEventSchedule: (eventSchedule: EventSchedule) => void;
   onHandlerSuccess: (hash: string) => void;
 }
 
 const EventList: FC<IEventList> = ({
   eventSchedule,
-  onGetEventSchedule,
   onHandlerSuccess,
 }) => {
   const [showConsoleTimeDuration, setShowConsoleTimeDuration] = useState<boolean>(false);
@@ -61,12 +59,12 @@ const EventList: FC<IEventList> = ({
     return ratio;
   }
 
-  const getEventSchedule = () => {
-    onGetEventSchedule(eventSchedule);
+  const openConsoleTimeDuration = () => {
+    setShowConsoleTimeDuration(true);
   }
 
-  const toggleConsoleTimeDuration = () => {
-    setShowConsoleTimeDuration((prevShow) => !prevShow);
+  const closeConsoleTimeDuration = () => {
+    setShowConsoleTimeDuration(false);
   }
 
   const getTimeDurationHandlerType = (type: TimeDurationHandler) => {
@@ -83,13 +81,12 @@ const EventList: FC<IEventList> = ({
         ) * 60}px`
       }}
       className={`absolute w-full flex justify-end`}
-      onClick={getEventSchedule}
     >
       <CalendarEventScheduleHandlerModal
         eventScheduleData={eventSchedule}
         type={timeDurationHandlerType}
         showModal={showConsoleTimeDuration}
-        onCloseModal={toggleConsoleTimeDuration}
+        onCloseModal={closeConsoleTimeDuration}
         onHandlerSuccess={onHandlerSuccess}
       />
       <div 
@@ -98,7 +95,7 @@ const EventList: FC<IEventList> = ({
         <div className=" absolute top-2 right-0 flex flex-row items-center gap-2">
           <TimeDurationHandlerDropdown 
             onGetTimeDurationHandlerType={getTimeDurationHandlerType}
-            onToggleConsoleTimeDuration={toggleConsoleTimeDuration}
+            onToggleConsoleTimeDuration={openConsoleTimeDuration}
           />
         </div>
         <p
