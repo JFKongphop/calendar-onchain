@@ -10,7 +10,7 @@ import store from './redux/store';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <WagmiConfig config={config}>
       <BrowserRouter>
         <Provider store={store}>
@@ -18,5 +18,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </Provider>
       </BrowserRouter>
     </WagmiConfig>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

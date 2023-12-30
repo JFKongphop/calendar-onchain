@@ -27,13 +27,13 @@ const SmallDate: FC<ISmallDate> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const daySelected = useSelector(daySelectedData)
-  const { calendarIndex, date } = useParams<DayEventParams>();
+  const { calendarIndex, calendarTitle, date } = useParams<DayEventParams>();
 
   const dateEventHandler = (day: Dayjs) => {
     dispatch(addDaySelected(day))
     const datePage = dayjs(day).format('MMM-DD-YYYY').toLocaleLowerCase()
 
-    navigate(`/calendar-event/${calendarIndex}/date/${datePage}`);
+    navigate(`/calendar-event/${calendarIndex}/${calendarTitle}/date/${datePage}`);
   }
 
   // console.log(date)

@@ -1,6 +1,7 @@
 import { EventParticipationTitle } from '@/type'
 import { shortAddrss } from '@/utils/shortAddress'
 import { FC } from 'react'
+import RemoveButton from '../button/RemoveButton';
 
 interface IParticipationCalendarCard {
   data: EventParticipationTitle;
@@ -29,12 +30,7 @@ const ParticipationCalendarCard: FC<IParticipationCalendarCard> = ({
       <div className="flex flex-col gap-1 pr-1">
         <div className="flex flex-row justify-between items-center">
           <p>{data.title}</p>
-          <button
-            className="border-2 border-red-500 px-1 text-red-500 bg-white hover:bg-red-500/20 text-sm rounded-md"
-            onClick={onToggleLeaveParticipation}
-          >
-            Remove
-          </button>
+          <RemoveButton onToggleLeaveParticipation={onToggleLeaveParticipation}/>
         </div>
         <div className="flex flex-row justify-between items-center">
           <p>Creater</p>

@@ -117,7 +117,6 @@ const CalendarLeaveEventModal: FC<ICalendarLeaveEventModal> = ({
                       {participationTitle}
                     </p>
                   </div>
-                  
                   {
                     changeLoading
                     &&

@@ -20,6 +20,8 @@ export type EventParticipationTitle = {
 
 export type CalendarHandler = 'edit name' | 'invite' | 'delete account';
 
+export type TimeDurationHandler = 'edit' | 'remove';
+
 export type RegisterProps<T extends FieldValues> = unknown & UseFormRegister<T>;
 
 export type SetValueProps<T extends FieldValues> = unknown & UseFormSetValue<T>;

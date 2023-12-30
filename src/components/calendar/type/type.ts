@@ -1,4 +1,3 @@
-import { StateEvents } from '@/context/ContextWrapper';
 import { useForm } from 'react-hook-form';
 
 export type DaySelected = {

@@ -1,18 +1,25 @@
 import dayjs from 'dayjs';
 
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
+import CalendarEventHandlerDropdown from '../dropdown/CalendarEventHandlerDropdown';
+import TimeDurationHandlerDropdown from '../dropdown/TimeDurationHandlerDropdown';
+import { EventSchedule, TimeDurationHandler } from '@/type';
+import CalendarEventScheduleHandlerModal from '../modal/CalendarEventScheduleHandlerModal';
 
 interface IEventList {
-  title: string;
-  startTimestamp: number;
-  endTimestamp: number;
+  eventSchedule: EventSchedule;
+  onGetEventSchedule: (eventSchedule: EventSchedule) => void;
+  onHandlerSuccess: (hash: string) => void;
 }
 
 const EventList: FC<IEventList> = ({
-  title,
-  startTimestamp,
-  endTimestamp,
+  eventSchedule,
+  onGetEventSchedule,
+  onHandlerSuccess,
 }) => {
+  const [showConsoleTimeDuration, setShowConsoleTimeDuration] = useState<boolean>(false);
+  const [timeDurationHandlerType, settimeDurationHandlerType] = useState<TimeDurationHandler>('edit');
+
   const convertUnixToHour = (time: number) => {
     return dayjs.unix(time / 1000).format('HH:mm');
   }
@@ -54,25 +61,50 @@ const EventList: FC<IEventList> = ({
     return ratio;
   }
 
+  const getEventSchedule = () => {
+    onGetEventSchedule(eventSchedule);
+  }
+
+  const toggleConsoleTimeDuration = () => {
+    setShowConsoleTimeDuration((prevShow) => !prevShow);
+  }
+
+  const getTimeDurationHandlerType = (type: TimeDurationHandler) => {
+    settimeDurationHandlerType(type);
+  }  
+
   return (
     <div 
       style={{
-        top: `${convertTimeToRatio(startTimestamp) * 60}px`,
+        top: `${convertTimeToRatio(eventSchedule.start_event) * 60}px`,
         height: `${calculateTimeDuration(
-          startTimestamp, 
-          endTimestamp
+          eventSchedule.start_event, 
+          eventSchedule.end_event
         ) * 60}px`
       }}
-      key={title}
       className={`absolute w-full flex justify-end`}
+      onClick={getEventSchedule}
     >
+      <CalendarEventScheduleHandlerModal
+        eventScheduleData={eventSchedule}
+        type={timeDurationHandlerType}
+        showModal={showConsoleTimeDuration}
+        onCloseModal={toggleConsoleTimeDuration}
+        onHandlerSuccess={onHandlerSuccess}
+      />
       <div 
         className="w-[95%] bg-calendar-minor-theme flex justify-start items-center"
       >
+        <div className=" absolute top-2 right-0 flex flex-row items-center gap-2">
+          <TimeDurationHandlerDropdown 
+            onGetTimeDurationHandlerType={getTimeDurationHandlerType}
+            onToggleConsoleTimeDuration={toggleConsoleTimeDuration}
+          />
+        </div>
         <p
           className="font-medium px-2 py-1 text-calendar-main-theme"
         >
-          {title} ({convertUnixToHour(startTimestamp)} - {convertUnixToHour(endTimestamp)})
+          {eventSchedule.title} ({convertUnixToHour(eventSchedule.start_event)} - {convertUnixToHour(eventSchedule.end_event)})
         </p>                        
       </div>
     </div>

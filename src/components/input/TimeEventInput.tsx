@@ -13,20 +13,16 @@ interface ITimeEventInput {
   title: string;
   control: Control<IMeetEvent>
   name: TimeInputValue;
-  openTimeRatio: boolean;
   timeRatioSelected: TimeRatio;
   onRatioSelector: (time: TimeRatio) => void;
-  ontoggleTimeSelector: () => void;
 }
 
 const TimeEventInput: FC<ITimeEventInput> = ({
   title,
   control,
   name,
-  openTimeRatio,
   timeRatioSelected,
   onRatioSelector,
-  ontoggleTimeSelector,
 }) => {
 
   const timeEventChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -81,30 +77,7 @@ const TimeEventInput: FC<ITimeEventInput> = ({
             timeRatioSelected={timeRatioSelected}
             onRatioSelector={onRatioSelector}
           />
-          {/* <div 
-            className="w-12 h-8 border-2 rounded-md border-standswork-zeus-black-100/30 flex justify-center items-center cursor-pointer"
-            onClick={ontoggleTimeSelector}
-          >
-            {timeRatioSelected}
-          </div> */}
         </div>
-        {/* {openTimeRatio && 
-          (
-            <div 
-              className="w-12 border border-standswork-zeus-black-100/30 absolute right-0 bg-white z-20 top-10 rounded-md"
-            >
-              {
-                timeRatioSelector.map((data) => (
-                  <SelectorList
-                    key={data}
-                    data={data}
-                    onSelector={onRatioSelector}  
-                  />
-                ))
-              }
-            </div>
-          )
-        } */}
       </div>
     </div>
   )

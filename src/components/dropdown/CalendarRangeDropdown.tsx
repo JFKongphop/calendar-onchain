@@ -16,7 +16,7 @@ const CalendarRangeDropdown = () => {
   const [rangeDay, setRangeDay] = useState<RangeDay>('Month');
 
   const dispatch = useDispatch();
-  const { calendarIndex } = useParams<MonthEventParams>();
+  const { calendarIndex, calendarTitle } = useParams<MonthEventParams>();
   
   const nagvigate = useNavigate();
   
@@ -26,11 +26,11 @@ const CalendarRangeDropdown = () => {
     const month = dayjs().format('MMM').toLowerCase();
 
     if (range === 'Today') {
-      terminalUrl = `/calendar-event/${calendarIndex}/date/${today}`;
+      terminalUrl = `/calendar-event/${calendarIndex}/${calendarTitle}/date/${today}`;
     }
 
     if (range === 'Month') {
-      terminalUrl = `/calendar-event/${calendarIndex}/month/${month}`;
+      terminalUrl = `/calendar-event/${calendarIndex}/${calendarTitle}/month/${month}`;
     }
 
     dispatch(addDaySelected(dayjs()))

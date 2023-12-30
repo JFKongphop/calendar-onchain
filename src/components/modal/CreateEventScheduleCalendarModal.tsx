@@ -166,7 +166,7 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
       })
       setMessageReturn('created event successfully and waiting for set data...');
   
-      responseData.wait();
+      await responseData.wait();
       closeModalHandler();
     }
     catch (e) {
@@ -180,21 +180,12 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
     }
   }
 
-  const toggleTimeRatioStart = () => {
-    setOpenTimeRatioStart(!openTimeRatioStart);
-  }
-
   const timeRatioStartSelectorHandler = useCallback((time: TimeRatio) => {
-    toggleTimeRatioStart();
     setTimeRatioStart(time);
   }, [])
 
-  const toggleTimeRatioEnd = () => {
-    setOpenTimeRatioEnd(!openTimeRatioEnd);
-  }
 
   const timeRatioEndSelectorHandler = useCallback((time: TimeRatio) => {
-    toggleTimeRatioEnd();
     setTimeRatioEnd(time);
   }, [])
 
@@ -297,10 +288,8 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                       title={"From"}
                       control={control}
                       name={"startHour"}
-                      openTimeRatio={openTimeRatioStart}
                       timeRatioSelected={timeRatioStart}
                       onRatioSelector={timeRatioStartSelectorHandler}
-                      ontoggleTimeSelector={toggleTimeRatioStart}
                     />
                   </div>
                   <div className="w-full">
@@ -308,10 +297,8 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                       title={"To"}
                       control={control}
                       name={"endHour"}
-                      openTimeRatio={openTimeRatioEnd}
                       timeRatioSelected={timeRatioEnd}
                       onRatioSelector={timeRatioEndSelectorHandler}
-                      ontoggleTimeSelector={toggleTimeRatioEnd}
                     />
                   </div>
                   <SmallCalendarSelector

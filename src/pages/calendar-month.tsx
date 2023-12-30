@@ -20,6 +20,10 @@ import Sidebar from '@/components/calendar/Sidebar';
 
 import type { Dayjs } from 'dayjs';
 import type { CalendarEvent } from '@/components/calendar/type/type';
+import { useContractCalendar, useEthersSigner } from '@/wagmi';
+import { EventSchedule } from '@/type';
+import dayjs from 'dayjs';
+import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 
 const CalendarMonth = () => {
   const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
@@ -29,20 +33,44 @@ const CalendarMonth = () => {
   const monthIndex = useSelector(monthIndexData)
   const rangeTime = useSelector(rangeTimeData)
   const showCreateEventModal = useSelector(showCreateEventModalData);
-  const events = useSelector(allEventData)
+  const signer = useEthersSigner()
+  const calendarContract = useContractCalendar();
+  const [eventSchedule, setEventSchedule] = useState<EventSchedule[]>([]);
+
+  // useEffect(() => {
+  //   setCurrentMonth(getMonth(monthIndex));
+  // }, [monthIndex]);
+
+  // useEffect(() => {
+  //   dispatch(addRangeTime([
+  //     currenMonth[0][0].startOf('day').valueOf(), 
+  //     currenMonth[4][6].endOf('day').valueOf()
+  //   ]))
+  // }, [currenMonth]);
 
   useEffect(() => {
-    setCurrentMonth(getMonth(monthIndex));
-  }, [monthIndex]);
+    const rangeTimeArray = monthArrayToRangeTime(monthIndex)
+    dispatch(addRangeTime(rangeTimeArray))
+  }, [monthIndex])
 
   useEffect(() => {
-    dispatch(addRangeTime([
-      currenMonth[0][0].startOf('day').valueOf(), 
-      currenMonth[4][6].endOf('day').valueOf()
-    ]))
-  }, [currenMonth]);
+    (async () => {
+      if (rangeTime) {
+        // console.log(rangeTime)
+        const data =  await calendarContract.getEventSchedule(0, rangeTime);
+        console.log(data[2])
+        const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
+          id: Number(event[0]),
+          start_event: Number(event[1]),
+          end_event: Number(event[2]),
+          title: event[3],
+        }));
 
-  console.log(rangeTime)
+
+        setEventSchedule(destructureEventSchedules)
+      }
+    })();
+  }, [rangeTime, signer])
 
   return (
     <>
@@ -56,7 +84,7 @@ const CalendarMonth = () => {
           (
             <div className="flex flex-1">
               <Sidebar/>
-              <Month month={currenMonth} />
+              <Month month={currenMonth} eventSchedule={eventSchedule} />
             </div>
           )
         }

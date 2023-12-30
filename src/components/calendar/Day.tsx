@@ -19,46 +19,55 @@ import { EventSchedule, MonthEventParams } from "@/type";
 interface IDay {
   day: Dayjs;
   rowIdx: number;
+  eventSchedule: EventSchedule[];
 }
 
 const Day:FC<IDay> = ({ 
   day, 
   rowIdx,
+  eventSchedule,
 }) => {
-  const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
+  // const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const rangeTime = useSelector(rangeTimeData)
   const signer = useEthersSigner()
   const calendarContract = useContractCalendar();
   const { calendarIndex, calendarTitle } = useParams<MonthEventParams>()
-  const { pathname } = useLocation()
 
-  useEffect(() => {
-    (async () => {
-      console.log(rangeTime)
-      const data =  await calendarContract.getEventSchedule(0, rangeTime);
-      console.log(data)
-      const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
-        id: Number(event[0]),
-        start_event: Number(event[1]),
-        end_event: Number(event[2]),
-        title: event[3],
-      }));
+  // useEffect(() => {
+  //   (async () => {
+  //     if (rangeTime) {
+  //       console.log(rangeTime)
+  //       const data =  await calendarContract.getEventSchedule(0, rangeTime);
+  //       console.log(data[2])
+  //       const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
+  //         id: Number(event[0]),
+  //         start_event: Number(event[1]),
+  //         end_event: Number(event[2]),
+  //         title: event[3],
+  //       }));
+  
+        // const eventEachDay = destructureEventSchedules.filter(
+        //   (evt) => 
+        //     dayjs(evt.start_event).startOf('day').valueOf() 
+        //     === dayjs(day).startOf('day').valueOf()
+        // );
+  //       setDayEvents(eventEachDay);
+  //     }
+  //   })();
+  // }, [signer, rangeTime])
 
-      const eventEachDay = destructureEventSchedules.filter(
-        (evt) => 
-          dayjs(evt.start_event).startOf('day').valueOf() 
-          === dayjs(day).startOf('day').valueOf()
-      );
+  const dayEvents: EventSchedule[] = eventSchedule.filter(
+    (evt) =>
+      dayjs(evt.start_event).isSame(day, 'day')
+  )
 
-      setDayEvents(eventEachDay);
-    })();
-  }, [signer, rangeTime])
+  console.log(eventSchedule)
+
+
 
   
-  
-
   const dateEventHandler = () => {
     dispatch(addDaySelected(day))
     const datePage = dayjs(day).format('MMM-DD-YYYY').toLowerCase()

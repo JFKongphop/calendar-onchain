@@ -1,17 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { AxiosResponse } from 'axios';
 
 import { useSelector } from '@/redux/store';
 import { rangeTimeData } from '@/redux/selector/rangeTime.selector';
 import { addRangeTime } from '@/redux/slice/rangeTime.slice';
-import { addAllEventState } from '@/redux/slice/event.slice';
-import { allEventData } from '@/redux/selector/event.selector';
 import { showCreateEventModalData } from '@/redux/selector/showCreateEventModal.selector';
-
-import EventRequest from '@/lib/event-request';
-import { dayjsToTimestamp } from '@/utils/rangeTimeStamp';
 
 import CalendarHeader from '@/components/calendar/CalendarHeader';
 import EventList from '@/components/card/EventList';
@@ -21,24 +15,27 @@ import CreateMeet from '@/components/modal/CreateEventScheduleCalendarModal';
 import Sidebar from '@/components/calendar/Sidebar';
 import CalendarEventCard from '@/components/card/CalendarEventCard';
 
-import type { CalendarEvent } from '@/components/calendar/type/type';
 import { DayEventParams, EventSchedule } from '@/type';
 import dayjs, { Dayjs } from 'dayjs';
 import { useContractCalendar, useEthersSigner } from '@/wagmi';
 import { getMonth } from '@/utils/getMonth';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const CalendarDate = () => {
   const [scheduleInnerHeight, setScheduleInnerHeight] = useState<number>(0);
-  const { day_date } = useParams();
-  const dispatch = useDispatch();
-  const events = useSelector(allEventData);
-  const rangeTime = useSelector(rangeTimeData);
   const showCreateEventModal = useSelector(showCreateEventModalData)
   const { calendarIndex, calendarTitle, date } = useParams<DayEventParams>()
   const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
   const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
-  const [monthRange, setMonthRange] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [eventSchedule, setEventSchedule] = useState<EventSchedule>();
+  const [eventHandlerSuccess, setEventHandlerSuccess] = useState<string>('');
 
+
+  const dispatch = useDispatch();
+  const rangeTime = useSelector(rangeTimeData);
+  const signer = useEthersSigner();
+  const calendarContract = useContractCalendar();
   const monthIndex = dayjs(date).month()
 
   useEffect(() => {
@@ -49,18 +46,8 @@ const CalendarDate = () => {
     const startTimeMonthArray = currenMonth[0][0].startOf('day').valueOf();
     const endTimeMonthArray = currenMonth[4][6].endOf('day').valueOf();
 
-    const monthRange = `${startTimeMonthArray}-${endTimeMonthArray}`;
-    setMonthRange(monthRange);
-  }, [currenMonth]);
-
-
-
-  const signer = useEthersSigner()
-  const calendarContract = useContractCalendar();
-
-  useEffect(() => {
-    dispatch(addRangeTime(dayjsToTimestamp(day_date as string, 'day')))
-  }, [day_date]);
+    dispatch(addRangeTime([startTimeMonthArray, endTimeMonthArray]))
+  }, [monthIndex]);
 
   const scheduleInnerRef = useRef<any>();
   useLayoutEffect(() => {
@@ -72,8 +59,9 @@ const CalendarDate = () => {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       console.log(rangeTime)
-      const data =  await calendarContract.getEventSchedule(0, monthRange);
+      const data =  await calendarContract.getEventSchedule(0, rangeTime);
       console.log(data)
       const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
         id: Number(event[0]),
@@ -84,15 +72,22 @@ const CalendarDate = () => {
 
       const eventEachDay = destructureEventSchedules.filter(
         (evt) => 
-          evt.id >= dayjs(date).startOf('day').valueOf()
-          && evt.id <= dayjs(date).endOf('day').valueOf()
+          dayjs(evt.start_event).isSame(date, 'day')
       );
 
       setDayEvents(eventEachDay);
+      setLoading(false);
     })();
-  }, [signer, monthRange])
+  }, [signer, rangeTime, eventHandlerSuccess])
 
-  // console.log(, );
+  const getEventSchedule = useCallback((eventSchedule: EventSchedule) => {
+    setEventSchedule(eventSchedule)
+  }, []);
+
+
+  const getHandlerSuccess = (hash: string) => {
+    setEventHandlerSuccess(hash);
+  }
   
   return (
     <div 
@@ -110,31 +105,50 @@ const CalendarDate = () => {
         <div style={{ height: scheduleInnerHeight }}>
           <Sidebar/>
         </div>
-        <CalendarEventCard innerHeight={scheduleInnerHeight}>        
-          {
-            dayEvents.map((data) => (
-              <EventList 
-                key={data.id}
-                title={data.title}
-                startTimestamp={data.start_event}
-                endTimestamp={data.end_event}
+        {
+          loading
+          ?
+          (
+            <div className="flex w-full h-full justify-center items-center">
+              <LoadingOutlined
+                style={{
+                  fontSize: 100,
+                  color: '#1e293b',
+                }}
+                spin
+                rev={undefined}
               />
-            ))
-          }
-          <div className="w-[5%] flex flex-col">
-            {Array.from({ length: 24 }).map((_, index) => (
-              <TimeLabelList 
-                key={index}
-                index={index} 
-              />
-            ))}
-          </div>
-          <div className="w-[95%] border-l">
-            {Array.from({ length: 24 }).map((_, index) => (
-              <LineList key={index} />
-            ))}
-          </div>
-        </CalendarEventCard>
+            </div>
+          )
+          :
+          (
+            <CalendarEventCard innerHeight={scheduleInnerHeight}>        
+              {
+                dayEvents.map((data) => (
+                  <EventList 
+                    key={data.id}
+                    eventSchedule={data} 
+                    onGetEventSchedule={getEventSchedule}
+                    onHandlerSuccess={getHandlerSuccess}             
+                  />
+                ))
+              }
+              <div className="w-[5%] flex flex-col">
+                {Array.from({ length: 24 }).map((_, index) => (
+                  <TimeLabelList 
+                    key={index}
+                    index={index} 
+                  />
+                ))}
+              </div>
+              <div className="w-[95%] border-l">
+                {Array.from({ length: 24 }).map((_, index) => (
+                  <LineList key={index} />
+                ))}
+              </div>
+            </CalendarEventCard>
+          )
+        }
       </div>
     </div>
   )

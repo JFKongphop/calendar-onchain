@@ -72,9 +72,9 @@ const CalendarEventHandlerModal: FC<ICalendarEventHandlerModal> = ({
 
     setErrorInput({ status: false, message: '' });
     setChangeLoading((loading) => !loading);
-    setMessageReturn('changing in process');
+    setMessageReturn('editing in process');
     const data = await calendarContract.editEventStoreTitle(calendarIndex, title);
-    setMessageReturn('changed name successfully and waiting for set data...');
+    setMessageReturn('editing name successfully and waiting for set data...');
     await data.wait();
 
     closeModalHandler();

@@ -1,9 +1,18 @@
-import React from 'react'
+import { FC } from 'react';
 
-const RemoveButton = () => {
+interface IRemoveButton {
+  onToggleLeaveParticipation: () => void;
+}
+
+const RemoveButton: FC<IRemoveButton> = ({ onToggleLeaveParticipation }) => {
   return (
-    <div>RemoveButton</div>
+    <button
+      className="border-2 border-red-500 px-1 text-red-500 bg-white hover:bg-red-500/20 text-sm rounded-md"
+      onClick={onToggleLeaveParticipation}
+    >
+      Remove
+    </button>
   )
 }
 
-export default RemoveButton
+export default RemoveButton;

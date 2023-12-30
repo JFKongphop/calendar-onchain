@@ -77,21 +77,22 @@ const CalendarEvent = () => {
   if (isConnected) {
     useEffect(() => {
       (async () => {
-        setLoadingEventTitles((loading) => !loading);
+        setLoadingEventTitles(true);
         const data = await calendarContract.getEventTitle();
+        console.log(data)
         const eventTitles: EventTitle[] = data.map((event: any, index: number) => ({
           title: event[0],
           parctitipationAmount: Number(event[1]),
           parctitipationAccount: event[2],
         }));
         setEventTitles(eventTitles);
-        setLoadingEventTitles((loading) => !loading);
+        setLoadingEventTitles(false);
       })();
     }, [signer, changeTitleSuccess]);
     
     useEffect(() => {
       (async () => {
-        setLoadingParticipationTitles((loading) => !loading);
+        setLoadingParticipationTitles(true);
         const data = await calendarContract.getParticipationTitle();
         const eventParticipationTitles: EventParticipationTitle[] = data.map((event: any) => ({
           title: event[0],
@@ -99,7 +100,7 @@ const CalendarEvent = () => {
           createdBy: event[2],
         }));
         setEventParticipationTitles(eventParticipationTitles);
-        setLoadingParticipationTitles((loading) => !loading);
+        setLoadingParticipationTitles(false);
       })();
     }, [signer, leaveParticipationEventSuccess]);
   }
