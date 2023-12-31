@@ -19,11 +19,14 @@ import { useContractCalendar, useEthersSigner } from '@/wagmi';
 import { EventSchedule } from '@/type';
 import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useAccount } from 'wagmi';
+import EmptyCalendarCard from '@/components/card/EmptyCalendarCard';
 
 const CalendarMonth = () => {
   const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
   const [loading, setLoading] = useState<boolean>(false)
 
+  const { isConnected } = useAccount();
   const dispatch = useDispatch();
   const monthIndex = useSelector(monthIndexData)
   const rangeTime = useSelector(rangeTimeData)
@@ -70,23 +73,35 @@ const CalendarMonth = () => {
             <Sidebar/>
           </div>
           {
-            loading
+            isConnected
             ?
             (
-              <div className="flex w-full h-full justify-center items-center">
-                <LoadingOutlined
-                  style={{
-                    fontSize: 100,
-                    color: '#1e293b',
-                  }}
-                  spin
-                  rev={undefined}
-                />
-              </div>
+              <>
+                {
+                  loading
+                  ?
+                  (
+                    <div className="flex w-full h-full justify-center items-center">
+                      <LoadingOutlined
+                        style={{
+                          fontSize: 100,
+                          color: '#1e293b',
+                        }}
+                        spin
+                        rev={undefined}
+                      />
+                    </div>
+                  )
+                  :
+                  (
+                    <Month month={currenMonth} eventSchedule={eventSchedule} />
+                  )
+                }
+              </>
             )
             :
             (
-              <Month month={currenMonth} eventSchedule={eventSchedule} />
+              <EmptyCalendarCard />
             )
           }
         </div>

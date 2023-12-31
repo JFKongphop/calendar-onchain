@@ -19,7 +19,7 @@ import type { Dayjs } from 'dayjs';
 import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
 
 import { toggleCreateEventModal } from '@/redux/slice/showCreateEventModal.slice';
-import { DayEventParams, ErrorInput } from '@/type';
+import { EventParams, ErrorInput } from '@/type';
 import { useContractCalendar } from '@/wagmi';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -42,7 +42,7 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
   const [errorInput, setErrorInput] = useState<ErrorInput>({ status: false, message: '' });
 
   const dispatch = useDispatch()
-  const { calendarTitle, calendarIndex } = useParams<DayEventParams>();
+  const { calendarTitle, calendarIndex } = useParams<EventParams>();
   const calendarContract = useContractCalendar();
   const rangeTime = useSelector(rangeTimeData);
   const monthIndex = daySelectorEvent.month()

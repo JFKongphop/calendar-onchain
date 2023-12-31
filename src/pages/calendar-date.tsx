@@ -21,6 +21,8 @@ import { useContractCalendar, useEthersSigner } from '@/wagmi';
 import { LoadingOutlined } from '@ant-design/icons';
 import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { compareSameDay } from '@/utils/compareDayjs';
+import { useAccount } from 'wagmi';
+import EmptyCalendarCard from '@/components/card/EmptyCalendarCard';
 
 const CalendarDate = () => {
   const [scheduleInnerHeight, setScheduleInnerHeight] = useState<number>(0);
@@ -30,6 +32,7 @@ const CalendarDate = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [eventHandlerSuccess, setEventHandlerSuccess] = useState<string>('');
 
+  const { isConnected } = useAccount();
   const dispatch = useDispatch();
   const rangeTime = useSelector(rangeTimeData);
   const signer = useEthersSigner();
@@ -67,7 +70,7 @@ const CalendarDate = () => {
       setDayEvents(eventEachDay);
       setLoading(false);
     })();
-  }, [signer, rangeTime, eventHandlerSuccess])
+  }, [signer, rangeTime, eventHandlerSuccess, date])
 
   const getHandlerSuccess = (hash: string) => {
     setEventHandlerSuccess(hash);
@@ -90,46 +93,58 @@ const CalendarDate = () => {
           <Sidebar/>
         </div>
         {
-          loading
+          isConnected
           ?
           (
-            <div className="flex w-full h-full justify-center items-center">
-              <LoadingOutlined
-                style={{
-                  fontSize: 100,
-                  color: '#1e293b',
-                }}
-                spin
-                rev={undefined}
-              />
-            </div>
+            <>
+              {
+                loading
+                ?
+                (
+                  <div className="flex w-full h-full justify-center items-center">
+                    <LoadingOutlined
+                      style={{
+                        fontSize: 100,
+                        color: '#1e293b',
+                      }}
+                      spin
+                      rev={undefined}
+                    />
+                  </div>
+                )
+                :
+                (
+                  <CalendarEventCard innerHeight={scheduleInnerHeight}>        
+                    {
+                      dayEvents.map((data) => (
+                        <EventList 
+                          key={data.id}
+                          eventSchedule={data} 
+                          onHandlerSuccess={getHandlerSuccess} 
+                        />
+                      ))
+                    }
+                    <div className="w-[5%] flex flex-col">
+                      {Array.from({ length: 24 }).map((_, index) => (
+                        <TimeLabelList 
+                          key={index}
+                          index={index} 
+                        />
+                      ))}
+                    </div>
+                    <div className="w-[95%] border-l">
+                      {Array.from({ length: 24 }).map((_, index) => (
+                        <LineList key={index} />
+                      ))}
+                    </div>
+                  </CalendarEventCard>
+                )
+              }
+            </>
           )
           :
           (
-            <CalendarEventCard innerHeight={scheduleInnerHeight}>        
-              {
-                dayEvents.map((data) => (
-                  <EventList 
-                    key={data.id}
-                    eventSchedule={data} 
-                    onHandlerSuccess={getHandlerSuccess} 
-                  />
-                ))
-              }
-              <div className="w-[5%] flex flex-col">
-                {Array.from({ length: 24 }).map((_, index) => (
-                  <TimeLabelList 
-                    key={index}
-                    index={index} 
-                  />
-                ))}
-              </div>
-              <div className="w-[95%] border-l">
-                {Array.from({ length: 24 }).map((_, index) => (
-                  <LineList key={index} />
-                ))}
-              </div>
-            </CalendarEventCard>
+            <EmptyCalendarCard />
           )
         }
       </div>
