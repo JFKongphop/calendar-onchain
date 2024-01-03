@@ -1,10 +1,5 @@
 import { FC } from 'react';
-import { 
-  HiOutlineChevronLeft, 
-  HiOutlineChevronRight 
-} from 'react-icons/hi';
-
-
+import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 
 interface MonthSlideHandler {
   type: 'left' | 'right';

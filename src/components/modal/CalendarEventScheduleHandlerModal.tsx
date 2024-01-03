@@ -1,25 +1,28 @@
 import { ErrorInput, EventSchedule, EventParams, TimeDurationHandler } from '@/type';
 import { Dialog, Transition } from '@headlessui/react';
-import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
+import {  Fragment, useCallback, useEffect, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
-import CreateEventButton from '../button/CreateEventButton';
 import { useForm } from 'react-hook-form';
-import { defaultValues } from '../calendar/type/initialState';
-import { IMeetEvent, TimeRatio } from '../calendar/type/type';
-import { useContractCalendar } from '@/wagmi';
+import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
-import dayjs, { Dayjs } from 'dayjs';
-import { getMonth } from '@/utils/getMonth';
+import { useDispatch } from 'react-redux';
+import { LoadingOutlined } from '@ant-design/icons';
+
+import { useContractCalendar } from '@/wagmi';
 import { addRangeTime } from '@/redux/slice/rangeTime.slice';
 import { rangeTimeData } from '@/redux/selector/rangeTime.selector';
 import { useSelector } from '@/redux/store';
-import { useDispatch } from 'react-redux';
-import { LoadingOutlined } from '@ant-design/icons';
 import { convertDateToUnix } from '@/utils/convertDateToUnix';
-import TimeEventInput from '../input/TimeEventInput';
 import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { splitTimeHour } from '@/utils/splitTimeHour';
 import { compareSameTime } from '@/utils/compareDayjs';
+
+import TimeEventInput from '@/components/input/TimeEventInput';
+import CreateEventButton from '@/components/button/CreateEventButton';
+import { defaultValues } from '@/components/calendar/type/initialState';
+import type { IMeetEvent, TimeRatio } from '@/components/calendar/type/type';
+
+import type { FC } from 'react';
 
 interface ICalendarEventScheduleHandlerModal {
   eventScheduleData: EventSchedule;

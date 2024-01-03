@@ -1,7 +1,8 @@
+import RemoveButton from '@/components/button/RemoveButton';
+
+import type { FC } from 'react'
 import { EventParticipationTitle } from '@/type'
 import { shortAddrss } from '@/utils/shortAddress'
-import { FC } from 'react'
-import RemoveButton from '../button/RemoveButton';
 
 interface IParticipationCalendarCard {
   data: EventParticipationTitle;

@@ -1,8 +1,9 @@
+import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { FC, Fragment } from "react";
 import { HiDotsVertical } from "react-icons/hi";
-import { RangeDay } from "../calendar/type/type";
-import { CalendarHandler } from "@/type";
+
+import type { FC } from "react";
+import type { CalendarHandler } from "@/type";
 
 const functionHandlers: CalendarHandler[] = ['edit name', 'invite', 'delete account']
 

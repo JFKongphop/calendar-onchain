@@ -1,23 +1,17 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from "react-hook-form";
-import { useDispatch } from 'react-redux';
-import dayjs from 'dayjs';
-import { useContractWrite, Address, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
-
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 import { CgClose } from "react-icons/cg";
 import CreateEventButton from '@/components/button/CreateEventButton';
 import { defaultValues } from "@/components/calendar/type/initialState";
 
+import { CALENDAR_ADDRESS } from '@/configs/enviroment';
+import { calendarABI } from '@/abi/calendar';
 
 import type { FC } from 'react';
-import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
-
-import { VITE_API_ENDPOINT, CALENDAR_ADDRESS } from '@/configs/enviroment';
-import { calendarABI } from '@/abi/calendar';
-import useDebounce from '@/hook/useDebounce';
-
+import type { IMeetEvent } from "@/components/calendar/type/type";
 
 interface ICreateEventTitleCelendarModal { 
   showModal: boolean;

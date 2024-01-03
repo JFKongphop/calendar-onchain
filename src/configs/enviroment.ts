@@ -1,7 +1,6 @@
 const ENV: ImportMetaEnv = import.meta.env;
 import { Address } from 'wagmi'
 
-
 const parseENV: { [key: string]: string } = {};
 
 Object.entries(ENV).map((env) => {

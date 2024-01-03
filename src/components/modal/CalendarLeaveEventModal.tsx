@@ -1,11 +1,14 @@
-import type { ErrorInput } from "@/type"
-import { useContractCalendar } from "@/wagmi";
+import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { FC, Fragment, useEffect, useState } from "react";
 import { CgClose } from "react-icons/cg";
-import CreateEventButton from "../button/CreateEventButton";
+
+import { useContractCalendar } from "@/wagmi";
+
+import CreateEventButton from "@/components/button/CreateEventButton";
 import { LoadingOutlined } from "@ant-design/icons";
 
+import type { FC } from 'react';
+import type { ErrorInput } from "@/type";
 
 interface ICalendarLeaveEventModal {
   paricipationIndex: number;

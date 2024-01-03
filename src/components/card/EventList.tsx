@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import dayjs from 'dayjs';
 
-import { useState, type FC } from 'react';
-import CalendarEventHandlerDropdown from '../dropdown/CalendarEventHandlerDropdown';
-import TimeDurationHandlerDropdown from '../dropdown/TimeDurationHandlerDropdown';
-import { EventSchedule, TimeDurationHandler } from '@/type';
-import CalendarEventScheduleHandlerModal from '../modal/CalendarEventScheduleHandlerModal';
+import TimeDurationHandlerDropdown from '@/components/dropdown/TimeDurationHandlerDropdown';
+import CalendarEventScheduleHandlerModal from '@/components/modal/CalendarEventScheduleHandlerModal';
+
+import type { FC } from 'react';
+import type { EventSchedule, TimeDurationHandler } from '@/type';
 
 interface IEventList {
   eventSchedule: EventSchedule;

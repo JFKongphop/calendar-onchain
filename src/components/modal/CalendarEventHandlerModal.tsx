@@ -1,13 +1,15 @@
-import { CalendarHandler, ErrorInput, EventTitle, RegisterProps, SetValueProps } from "@/type"
+import { Fragment, useEffect, useState } from "react";
 import { useContractCalendar } from "@/wagmi";
 import { Dialog, Transition } from "@headlessui/react";
-import { FC, Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CgClose } from "react-icons/cg";
-import CreateEventButton from "../button/CreateEventButton";
 import { utils } from "ethers";
+
+import CreateEventButton from "@/components/button/CreateEventButton";
 import EventHandlerCard from "@/components/card/EventHandlerCard";
 
+import type { FC } from 'react';
+import type { CalendarHandler, ErrorInput, EventTitle, RegisterProps, SetValueProps } from "@/type";
 
 interface ICalendarEventHandlerModal {
   calendarEventData: EventTitle;

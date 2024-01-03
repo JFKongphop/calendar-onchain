@@ -6,10 +6,12 @@ import { addDaySelected } from "@/redux/slice/daySelected.slice";
 
 import ShortEventList from "@/components/card/ShortEventList";
 
+import { compareSameDay } from "@/utils/compareDayjs";
+
 import type { FC } from "react";
 import type { Dayjs } from "dayjs";
-import { EventSchedule, EventParams } from "@/type";
-import { compareSameDay } from "@/utils/compareDayjs";
+import type { EventSchedule, EventParams } from "@/type";
+
 
 interface IDay {
   day: Dayjs;

@@ -1,14 +1,16 @@
-import { monthIndexData } from '@/redux/selector/monthIndex.selector';
-import { useSelector } from '@/redux/store';
-import { ErrorInput, EventParams } from '@/type';
-import { useContractCalendar } from '@/wagmi';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import dayjs from 'dayjs';
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
 import { CgClose } from 'react-icons/cg';
 import { useParams } from 'react-router-dom';
-import CreateEventButton from '../button/CreateEventButton';
+
+import { useContractCalendar } from '@/wagmi';
+
+import CreateEventButton from '@/components/button/CreateEventButton';
+
+import type { FC } from 'react';
+import type { ErrorInput, EventParams } from '@/type';
 
 interface ICalendarRemoveMonthEventModal {
   rangeTime: string;

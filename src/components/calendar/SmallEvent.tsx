@@ -1,4 +1,5 @@
 import SmallEventList from '@/components/card/SmallEventList';
+
 import type { FC } from 'react';
 import type { CalendarEvent } from './type/type';
 

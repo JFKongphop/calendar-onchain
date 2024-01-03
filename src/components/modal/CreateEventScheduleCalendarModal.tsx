@@ -13,11 +13,6 @@ import { defaultValues } from "@/components/calendar/type/initialState";
 
 import { convertDateToUnix } from '@/utils/convertDateToUnix';
 
-import type { FC } from 'react'
-import type { UseFormRegister } from "react-hook-form";
-import type { Dayjs } from 'dayjs';
-import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
-
 import { toggleCreateEventModal } from '@/redux/slice/showCreateEventModal.slice';
 import { EventParams, ErrorInput } from '@/type';
 import { useContractCalendar } from '@/wagmi';
@@ -28,6 +23,10 @@ import { addRangeTime } from '@/redux/slice/rangeTime.slice';
 import { rangeTimeData } from '@/redux/selector/rangeTime.selector';
 import { useSelector } from '@/redux/store';
 
+import type { FC } from 'react'
+import type { UseFormRegister } from "react-hook-form";
+import type { Dayjs } from 'dayjs';
+import type { IMeetEvent, TimeRatio } from "@/components/calendar/type/type";
 
 interface ICreateEventScheduleCalendarModal { 
   showModal: boolean; 

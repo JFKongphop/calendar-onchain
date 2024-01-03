@@ -1,13 +1,12 @@
 import { Controller } from 'react-hook-form';
 import { RxDotFilled } from 'react-icons/rx';
 
-import SelectorList from '@/components/card/SelectorList';
-import { timeRatioSelector } from '@/components/calendar/type/initialState';
+import TimeRatioSelectorDropdown from '@/components/dropdown/TimeRatioSelectorDropdown';
 
 import type { ChangeEvent, FC } from 'react';
 import type { Control } from 'react-hook-form';
 import type { IMeetEvent, TimeInputValue, TimeRatio } from '@/components/calendar/type/type';
-import TimeRatioSelectorDropdown from '../dropdown/TimeRatioSelectorDropdown';
+
 
 interface ITimeEventInput {
   title: string;

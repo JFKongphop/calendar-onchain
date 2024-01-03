@@ -4,8 +4,7 @@ import Day from "./Day";
 
 import type { FC } from "react";
 import type { Dayjs } from "dayjs";
-import { CalendarEvent } from "./type/type";
-import { EventSchedule } from "@/type";
+import type { EventSchedule } from "@/type";
 
 
 interface IMonth {

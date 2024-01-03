@@ -1,25 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
+import { useSelector } from "@/redux/store";
+import { addRangeTime } from "@/redux/slice/rangeTime.slice";
+import { rangeTimeData } from "@/redux/selector/rangeTime.selector";
 import { monthIndexData } from "@/redux/selector/monthIndex.selector";
 import { addMonthIndexState } from "@/redux/slice/monthIndex.slice";
 
-import MonthSlideHandler from "../button/MonthSlideHandler";
-import CalendarRangeDropdown from "../dropdown/CalendarRangeDropdown";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { shortAddrss } from "@/utils/shortAddress";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ErrorInput, EventParams } from "@/type";
 import { shortMonthToNumber } from "@/utils/shortMonthToNumber";
-import { useContractCalendar } from "@/wagmi";
 import { monthArrayToRangeTime } from "@/utils/rangeTimeStamp";
-import { addRangeTime } from "@/redux/slice/rangeTime.slice";
-import { useSelector } from "@/redux/store";
-import { rangeTimeData } from "@/redux/selector/rangeTime.selector";
-import CalendarRemoveMonthEventModal from "../modal/CalendarRemoveMonthEventModal";
-import { Link } from "react-router-dom";
+
+import MonthSlideHandler from "@/components/button/MonthSlideHandler";
+import CalendarRangeDropdown from "@/components/dropdown/CalendarRangeDropdown";
+import CalendarRemoveMonthEventModal from "@/components/modal/CalendarRemoveMonthEventModal";
+
+import type { EventParams } from "@/type";
 
 const CalendarHeader = () => {
   const [showTimeRangeHandler, setShowTimeRangeHandler] = useState<boolean>(false);

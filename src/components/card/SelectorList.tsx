@@ -1,6 +1,5 @@
-import { TimeRatio } from '../calendar/type/type';
-
-import type{ FC } from 'react';
+import type { FC } from 'react';
+import type { TimeRatio } from '@/components/calendar/type/type';
 
 interface ISelectorList {
   onSelector: (data: TimeRatio) => void;

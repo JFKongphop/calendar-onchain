@@ -1,7 +1,10 @@
-import { TimeDurationHandler } from '@/type';
+import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react';
-import { FC, Fragment } from 'react'
 import { HiDotsVertical } from 'react-icons/hi';
+
+
+import type { FC } from 'react'
+import type { TimeDurationHandler } from '@/type';
 
 const timeDurationHandlers: TimeDurationHandler[] = ['edit', 'remove'];
 

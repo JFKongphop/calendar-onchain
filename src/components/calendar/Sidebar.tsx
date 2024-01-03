@@ -1,5 +1,5 @@
 import ShowEventModalButton from "@/components/button/ShowEventModalButton";
-import SmallCalendar from "./SmallCalendar";
+import SmallCalendar from "@/components/calendar/SmallCalendar";
 
 const Sidebar = () => {
   return (

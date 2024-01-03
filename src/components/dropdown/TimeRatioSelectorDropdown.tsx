@@ -1,56 +1,27 @@
-import { FC, Fragment, useState } from 'react'
+import { Fragment, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
-
-import { addMonthIndexState } from '@/redux/slice/monthIndex.slice';
-import { addDaySelected } from '@/redux/slice/daySelected.slice';
+import dayjs from 'dayjs';
 
 import { Menu, Transition } from '@headlessui/react';
-import { IMeetEvent, RangeDay, TimeRatio } from '@/components/calendar/type/type';
-import { EventParams } from '@/type';
-import { timeRatioSelector } from '../calendar/type/initialState';
-import { UseFormSetValue } from 'react-hook-form';
+import { timeRatioSelector } from '@/components/calendar/type/initialState';
+
+import type { FC } from 'react';
+import type { EventParams } from '@/type';
+import type { RangeDay, TimeRatio } from '@/components/calendar/type/type';
+
 
 const timeSelector: RangeDay[] =  ['Today', 'Month'];
 
 interface ITimeRatioSelectorDropdown {
   timeRatioSelected: TimeRatio;
   onRatioSelector: (time: TimeRatio) => void;
-  // setValue: UseFormSetValue<IMeetEvent>;
 }
 
 const TimeRatioSelectorDropdown: FC<ITimeRatioSelectorDropdown> = ({
   timeRatioSelected,
   onRatioSelector
 }) => {
-  const [rangeDay, setRangeDay] = useState<RangeDay>('Month');
-
-  const dispatch = useDispatch();
-  const { calendarIndex } = useParams<EventParams>();
-  
-  const nagvigate = useNavigate();
-  
-  const rangeDaySelectorHandler = (range: TimeRatio) => {
-    let terminalUrl: string = '';
-    const today = dayjs().format('MMM-DD-YYYY').toLowerCase();
-    const month = dayjs().format('MMM').toLowerCase();
-
-    // if (range === 'Today') {
-    //   terminalUrl = `/calendar-event/${calendarIndex}/date/${today}`;
-    // }
-
-    // if (range === 'Month') {
-    //   terminalUrl = `/calendar-event/${calendarIndex}/month/${month}`;
-    // }
-
-    // dispatch(addDaySelected(dayjs()))
-    // dispatch(addMonthIndexState(dayjs().month()))
-
-    // nagvigate(terminalUrl);
-    // setRangeDay(range);
-  }
-  
   return (
     <Menu 
       as="div" 

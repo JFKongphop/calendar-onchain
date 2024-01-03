@@ -50,3 +50,62 @@ export type EventStoreRetrived = {
   accounts: Address[];
   eventSchedules: EventSchedule[];
 }
+
+export type ContractType = {
+  addEventSchedule: (
+    id: number, 
+    start_event: number, 
+    end_event: number, 
+    store_index: number, 
+    store_title: string, 
+    title_event: string, 
+    month_range: string
+  ) => any;
+  createEventStore: (title: string) => any
+  deleteEventSchedule: (
+    store_index: number, 
+    event_id: number, 
+    month_range: string
+  ) => any;
+  deleteEventScheduleMonth: (
+    store_index: number, 
+    month_range: string
+  ) => any;
+  editEventSchedule: (
+    store_index: number, 
+    event_id: number, 
+    start_event: number, 
+    end_event: number, 
+    month_range: string, 
+    title: string
+  ) => any;
+  editEventStoreTitle: (
+    store_index: number, 
+    new_store_title: string
+  ) => any;
+  getEventSchedule: (
+    store_index: number, 
+    month_range: string
+  ) => any;
+  getEventTitle: () => any
+  getParticipationStore: (
+    store_index: number, 
+    store_title: string, 
+    month_range: string
+  ) => any;
+  getParticipationTitle: () => any
+  inviteParticipation: (
+    store_index: number, 
+    title: string, 
+    invitation_account: string
+  ) => any;
+  leaveParticipationEvent: (
+    store_index: number, 
+    store_title: string
+  ) => any;
+  removeAccountParticipation: (
+    store_index: number, 
+    participationAccount: string
+  ) => any;
+  removeAllAccountParticipations: (store_index: number) => any
+};

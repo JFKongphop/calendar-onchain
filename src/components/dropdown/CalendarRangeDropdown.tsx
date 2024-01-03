@@ -2,13 +2,14 @@ import { Fragment, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
+import { Menu, Transition } from '@headlessui/react';
 
 import { addMonthIndexState } from '@/redux/slice/monthIndex.slice';
 import { addDaySelected } from '@/redux/slice/daySelected.slice';
 
-import { Menu, Transition } from '@headlessui/react';
 import { RangeDay } from '@/components/calendar/type/type';
-import { EventParams } from '@/type';
+
+import type { EventParams } from '@/type';
 
 const timeSelector: RangeDay[] =  ['Today', 'Month'];
 

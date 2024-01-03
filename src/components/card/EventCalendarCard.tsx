@@ -1,10 +1,10 @@
-import type { CalendarHandler, EventTitle } from '@/type';
-import { FC } from 'react';
-import CalendarEventHandlerDropdown from '@/components/dropdown/CalendarEventHandlerDropdown';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from '@/redux/store';
-import { monthIndexData } from '@/redux/selector/monthIndex.selector';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+
+import CalendarEventHandlerDropdown from '@/components/dropdown/CalendarEventHandlerDropdown';
+
+import type { FC } from 'react';
+import type { CalendarHandler, EventTitle } from '@/type';
 
 interface IEventCalendarCard {
   data: EventTitle;
