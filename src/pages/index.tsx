@@ -1,24 +1,21 @@
-import React, { Fragment, useContext } from 'react'
-import dayjs from 'dayjs';
-import { getMonth } from '@/utils/getMonth';
-import { 
-  Menu, 
-  Dialog, 
-  Transition 
-} from '@headlessui/react';
 import CalendarHeader from '@/components/calendar/CalendarHeader';
+import { useEffect } from 'react';
+import { useAccount } from 'wagmi';
 
-const Index = () => {
-  console.log(dayjs());
+const Index = () => {  
+  const { isConnected } = useAccount();
 
-  console.log(getMonth())
+  useEffect(() => {
+    if (isConnected) {
+      window.location.href = '/calendar-event';
+    }
+  }, [isConnected]);
 
-  
   return (
-    <div className="text-red-500">
-<CalendarHeader />
+    <div className="h-screen flex flex-col w-full mb-20 pb-20">
+      <CalendarHeader />
     </div>
-  )
-}
+  );
+};
 
 export default Index;

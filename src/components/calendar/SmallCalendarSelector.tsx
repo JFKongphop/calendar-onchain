@@ -5,6 +5,7 @@ import MonthSlideHandler from "@/components/button/MonthSlideHandler";
 import SmallDate from "@/components/card/SmallDate";
 
 import { getMonth } from "@/utils/getMonth";
+import { displayMonth } from "@/utils/displayMonth";
 
 import type { FC } from "react";
 import type { Dayjs } from "dayjs";
@@ -18,15 +19,9 @@ const SmallCalendarSelector: FC<ISmallCalendarSelector> = ({
   daySelectedEvent,
   onDaySelected,
 }) => {
-  const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(
-    dayjs().month()
-  );
+  const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(dayjs().month());
   const [currentMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
   const [monthIndex, setMonthIndex] = useState<number>(dayjs().month());
-
-  // const { day_date } = useParams();
-
-  // console.log(day_date)
 
   useEffect(() => {
     setCurrentMonth(getMonth(currentMonthIdx));
@@ -44,21 +39,7 @@ const SmallCalendarSelector: FC<ISmallCalendarSelector> = ({
     setMonthIndex((month) => month + 1);
   }
 
-  const displayMonth = (format: string) => {
-    return dayjs(
-      new Date(dayjs().year()
-      , currentMonthIdx)
-    ).format(format);
-  }
-
-  const [monthName, year] = displayMonth('MMMM YYYY').split(' ');
-  const startOfMonth = dayjs(`${Number(year)}-${monthName}-01`)
-  .startOf('day');
-  const endOfMonth = dayjs(`${Number(year)}-${monthName}-01`)
-  .endOf('day');
-
-  const startOfMonthTimestamp = startOfMonth.valueOf();
-  const endOfMonthTimestamp = endOfMonth.valueOf();
+  const monthFormat = displayMonth(currentMonthIdx);
   
   return (
     <div
@@ -70,7 +51,7 @@ const SmallCalendarSelector: FC<ISmallCalendarSelector> = ({
           onSlideMonth={handlePrevMonth}
         />
         <p className="text-standswork-zeus-black-100 font-bold">
-          {displayMonth('MMMM YYYY')}
+          {monthFormat}
         </p>
         <MonthSlideHandler 
           type={'right'}

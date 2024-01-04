@@ -1,12 +1,12 @@
 import  { useEffect, useState, Fragment } from "react";
-import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 
+import { useHandleSlideMonth } from "@/custom-hook/useHandlePrevMonth";
 import { useSelector } from "@/redux/store";
 import { monthIndexData } from "@/redux/selector/monthIndex.selector";
-import { addMonthIndexState } from "@/redux/slice/monthIndex.slice";
 
 import { getMonth } from "@/utils/getMonth";
+import { displayMonth } from "@/utils/displayMonth";
 
 import MonthSlideHandler from "@/components/button/MonthSlideHandler";
 import SmallDate from "@/components/card/SmallDate";
@@ -14,12 +14,9 @@ import SmallDate from "@/components/card/SmallDate";
 import type { Dayjs } from "dayjs";
 
 const SmallCalendar = () => {
-  const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(
-    dayjs().month()
-  );
+  const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(dayjs().month());
   const [currentMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());  
-  const dispatch = useDispatch()
-  const monthIndex = useSelector(monthIndexData)
+  const monthIndex = useSelector(monthIndexData);
 
   useEffect(() => {
     setCurrentMonth(getMonth(currentMonthIdx));
@@ -29,22 +26,11 @@ const SmallCalendar = () => {
     setCurrentMonthIdx(monthIndex);
   }, [monthIndex]);
 
-  const handlePrevMonth = () => {
-    dispatch(addMonthIndexState(monthIndex - 1))
-  }
+  const handleNextMonth = useHandleSlideMonth('next');
+  const handlePrevMonth = useHandleSlideMonth('prev');
 
-  const handleNextMonth = () => {
-    dispatch(addMonthIndexState(monthIndex + 1))
-  }
+  const monthFormat = displayMonth(currentMonthIdx);
 
-  const displayMonth = (format: string) => {
-    return dayjs(
-      new Date(dayjs().year()
-      , currentMonthIdx)
-    ).format(format);
-  }
-  
-  
   return (
     <div className="mt-9 flex flex-col gap-4 text-calendar-main-theme">
       <header className="flex justify-between items-center">
@@ -53,7 +39,7 @@ const SmallCalendar = () => {
           onSlideMonth={handlePrevMonth}
         />
         <p className="font-bold">
-          {displayMonth('MMMM YYYY')}
+          {monthFormat}
         </p>
         <MonthSlideHandler 
           type={'right'}

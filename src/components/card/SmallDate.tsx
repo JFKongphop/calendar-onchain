@@ -52,6 +52,8 @@ const SmallDate: FC<ISmallDate> = ({
       if (today === currentDayInCalendar) {
         return 'bg-calendar-main-theme rounded-full text-white font-bold';
       }
+
+      if (!date) return ''
   
       if (
         selectDay === currentDayInCalendar 

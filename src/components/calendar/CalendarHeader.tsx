@@ -1,35 +1,30 @@
-import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
+import { useHandleSlideMonth } from "@/custom-hook/useHandlePrevMonth";
 import { useSelector } from "@/redux/store";
 import { addRangeTime } from "@/redux/slice/rangeTime.slice";
 import { rangeTimeData } from "@/redux/selector/rangeTime.selector";
 import { monthIndexData } from "@/redux/selector/monthIndex.selector";
-import { addMonthIndexState } from "@/redux/slice/monthIndex.slice";
 
 import { shortAddrss } from "@/utils/shortAddress";
-import { shortMonthToNumber } from "@/utils/shortMonthToNumber";
 import { monthArrayToRangeTime } from "@/utils/rangeTimeStamp";
 
 import MonthSlideHandler from "@/components/button/MonthSlideHandler";
 import CalendarRangeDropdown from "@/components/dropdown/CalendarRangeDropdown";
 import CalendarRemoveMonthEventModal from "@/components/modal/CalendarRemoveMonthEventModal";
 
-import type { EventParams } from "@/type";
 
 const CalendarHeader = () => {
   const [showTimeRangeHandler, setShowTimeRangeHandler] = useState<boolean>(false);
   const [showRemoveMonthEventModal, setShowRemoveMonthEventModal] = useState<boolean>(false);
 
-  const { calendarIndex, calendarTitle, month, date } = useParams<EventParams>()
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
+  const { pathname } = useLocation();
   const monthIndex = useSelector(monthIndexData);
   const {address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
@@ -41,35 +36,8 @@ const CalendarHeader = () => {
     dispatch(addRangeTime(rangeTimeArray))
   }, [monthIndex]);
 
-  const handlePrevMonth = useCallback(() => {
-    let prevMonthIndex: number = dayjs().month();
-    if (month) {
-      prevMonthIndex = shortMonthToNumber(month) - 1;
-    }
-    if (date) {
-      prevMonthIndex = dayjs(date).month() - 1;
-    }
-
-    const prevMonth = dayjs().month(prevMonthIndex).format('MMM').toLowerCase();
-    const terminalURL = `/calendar-event/${calendarIndex}/${calendarTitle}/month/${prevMonth}`;
-    navigate(terminalURL);
-    dispatch(addMonthIndexState(monthIndex - 1));
-  }, [monthIndex])
-  
-  const handleNextMonth = useCallback(() => {
-    let nextMonthIndex: number = dayjs().month();
-    if (month) {
-      nextMonthIndex = shortMonthToNumber(month) + 1;
-    }
-    if (date) {
-      nextMonthIndex = dayjs(date).month() + 1;
-    }
-
-    const nextMonth = dayjs().month(nextMonthIndex).format('MMM').toLowerCase();
-    const terminalURL = `/calendar-event/${calendarIndex}/${calendarTitle}/month/${nextMonth}`;
-    navigate(terminalURL);
-    dispatch(addMonthIndexState(monthIndex + 1));
-  }, [monthIndex])
+  const handleNextMonth = useHandleSlideMonth('next');
+  const handlePrevMonth = useHandleSlideMonth('prev');
 
 
   const disconnectWallet = () => {
@@ -87,9 +55,9 @@ const CalendarHeader = () => {
   }
 
   useEffect(() => {
-    const path = location.pathname.split('/');
+    const path = pathname.split('/');
     const lenghtOfPathElement = path.length;
-    const atCalendarEventPage = path[lenghtOfPathElement - 1] === 'calendar-event';
+    const atCalendarEventPage = path[lenghtOfPathElement - 1] === 'calendar-event' || pathname === '/';
     if(atCalendarEventPage) {
       setShowTimeRangeHandler(false);
     }
