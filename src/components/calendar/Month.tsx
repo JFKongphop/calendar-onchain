@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 
-import Day from "./Day";
+import Day from "@/components/calendar/Day";
 
 import type { FC } from "react";
 import type { Dayjs } from "dayjs";
@@ -21,7 +21,7 @@ const Month: FC<IMonth> = ({
       {month.map((row, i) => (
         <Fragment key={i}>
           {row.map((day, idx) => (
-            <Day day={day} key={idx} rowIdx={i} eventSchedule={eventSchedule} />
+            <Day day={day} key={idx} eventSchedule={eventSchedule} />
           ))}
         </Fragment>
       ))}

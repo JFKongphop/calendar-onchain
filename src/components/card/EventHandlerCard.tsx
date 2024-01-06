@@ -73,11 +73,11 @@ const EventHandlerCard: FC<IEventHandlerCard> = ({
       <label 
         className="flex justify-start items-center text-md font-semibold"
       >
-        {type === 'edit name' && 'Edit name'}
+        {type === 'edit title' && 'Title'}
         {(type === 'invite' || type === 'delete account') && 'Address'}
       </label>
       {
-        (type === 'edit name' || type === 'invite')
+        (type === 'edit title' || type === 'invite')
         &&
         (
           <input
@@ -103,7 +103,7 @@ const EventHandlerCard: FC<IEventHandlerCard> = ({
         &&
         (
           <div 
-            className="flex flex-row items-center absolute bottom-16 text-calendar-main-theme font-semibold text-xs gap-1"
+            className="absolute inset-x-0 flex flex-row bottom-[44px] items-center justify-center p-4 text-xs gap-1"
           >
             <LoadingOutlined
               style={{
@@ -113,7 +113,7 @@ const EventHandlerCard: FC<IEventHandlerCard> = ({
               spin
               rev={undefined}
             />
-            <p>{messageReturn}</p>
+            <p className="text-center">{messageReturn}</p>
           </div>
         )
       }
@@ -122,7 +122,7 @@ const EventHandlerCard: FC<IEventHandlerCard> = ({
         &&
         (
           <div 
-            className="absolute bottom-16 text-red-500 font-semibold text-xs"
+            className="absolute w-full text-center bottom-[60px] text-red-500 font-semibold text-xs"
           >
             {errorInput.message}
           </div>

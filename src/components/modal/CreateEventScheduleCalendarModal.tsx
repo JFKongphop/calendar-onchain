@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
+// import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+// import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 
 import { CgClose } from "react-icons/cg";
 import TimeEventInput from '@/components/input/TimeEventInput';
@@ -41,12 +43,19 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
   const [errorInput, setErrorInput] = useState<ErrorInput>({ status: false, message: '' });
 
   const dispatch = useDispatch()
-  const { calendarTitle, calendarIndex } = useParams<EventParams>();
+  const { calendarTitle, calendarIndex, date } = useParams<EventParams>();
   const calendarContract = useContractCalendar();
   const rangeTime = useSelector(rangeTimeData);
   const monthIndex = daySelectorEvent.month()
 
   useEffect(() => {
+    if (date && showModal) {
+      setDaySelectorEvent(dayjs(date))
+    }
+  }, [])
+
+  useEffect(() => {
+    const [startMonthCalendar, endMonthCalendar] = rangeTime.split('-').map((range) => Number(range));
     const rangeTimeArray = monthArrayToRangeTime(monthIndex);
     dispatch(addRangeTime(rangeTimeArray));
   }, [monthIndex])
@@ -205,7 +214,7 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                     className="w-full text-md flex flex-row justify-between relative"
                   >
                     <p>Date</p>
-                    <p>{(daySelectorEvent as any).format("dddd, DD MMMM YYYY")}</p>
+                    <p>{daySelectorEvent.format("dddd, DD MMMM YYYY")}</p>
                   </div>
                   
                   <div className="w-full gap-2 flex flex-col">

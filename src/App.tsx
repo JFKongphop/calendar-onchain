@@ -8,7 +8,11 @@ import CalendarEvent from './pages/calendar-event';
 import CalendarMonth from './pages/calendar-month';
 import CalendarDate from './pages/calendar-date';
 import Error from './pages/error';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import dayjs from 'dayjs';
 
+dayjs.extend(isSameOrAfter, isSameOrBefore)
 
 const App = () => {
   const navigate = useNavigate();
@@ -20,12 +24,6 @@ const App = () => {
       connect({ connector: new MetaMaskConnector() });
     }
   }, []);
-
-  useEffect(() => {
-    if (!isConnected) {
-      return navigate('/');
-    }
-  }, [])
 
   return (
     <Routes>

@@ -16,16 +16,20 @@ import Sidebar from '@/components/calendar/Sidebar';
 
 import type { Dayjs } from 'dayjs';
 import { useContractCalendar, useEthersSigner } from '@/wagmi';
-import { EventSchedule } from '@/type';
+import { EventParams, EventSchedule } from '@/type';
 import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useAccount } from 'wagmi';
 import EmptyCalendarCard from '@/components/card/EmptyCalendarCard';
+import dayjs from 'dayjs';
+import { useLocation, useParams } from 'react-router-dom';
+import { destructureEventSchedules } from '@/utils/destructureEventSchedules';
 
 const CalendarMonth = () => {
   const [currenMonth, setCurrentMonth] = useState<Dayjs[][]>(getMonth());
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
 
+  const { pathname } = useLocation();
   const { isConnected } = useAccount();
   const dispatch = useDispatch();
   const monthIndex = useSelector(monthIndexData)
@@ -34,6 +38,7 @@ const CalendarMonth = () => {
   const signer = useEthersSigner()
   const calendarContract = useContractCalendar();
   const [eventSchedule, setEventSchedule] = useState<EventSchedule[]>([]);
+  const { calendarIndex, calendarTitle } = useParams<EventParams>()
 
   useEffect(() => {
     const rangeTimeArray = monthArrayToRangeTime(monthIndex);
@@ -44,20 +49,30 @@ const CalendarMonth = () => {
   useEffect(() => {
     (async () => {
       if (rangeTime) {
-        setLoading(true)
-        const data =  await calendarContract.getEventSchedule(0, rangeTime);
-        const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
-          id: Number(event[0]),
-          start_event: Number(event[1]),
-          end_event: Number(event[2]),
-          title: event[3],
-        }));
+        const location = pathname.split('/')[2];
+        const atParticipationPage = location === 'participation';
+        let eventSchedules: EventSchedule[] = [];
+        setLoading(true);
 
-        setEventSchedule(destructureEventSchedules);
-        setLoading(false)
+        if (atParticipationPage) {
+          const calendarEventTitle = calendarTitle?.replaceAll('-', ' ');
+          const data = await calendarContract.getParticipationStore(
+            calendarIndex, 
+            calendarEventTitle, 
+            rangeTime
+          );
+          eventSchedules = await destructureEventSchedules(data);
+        }
+        else {
+          const data =  await calendarContract.getEventSchedule(calendarIndex, rangeTime);
+          eventSchedules = await destructureEventSchedules(data);
+        }
+
+        setEventSchedule(eventSchedules);
+        setLoading(false);
       }
     })();
-  }, [rangeTime, signer])
+  }, [rangeTime, signer, pathname]);
 
   return (
     <>
@@ -94,7 +109,20 @@ const CalendarMonth = () => {
                   )
                   :
                   (
-                    <Month month={currenMonth} eventSchedule={eventSchedule} />
+                    <div className="flex flex-col w-full h-full">
+                      <div className=" grid grid-cols-7 border-b-2 border-calendar-main-theme ">
+                        {
+                          Array.from({ length: 7 }).map((_, dayIndex) => (
+                            <p 
+                              className="text-sm text-center border-calendar-main-theme bg-calendar-main-theme text-white font-bold"
+                            >
+                              {dayjs().day(dayIndex).format("ddd").toUpperCase()}
+                            </p>
+                          ))
+                        }
+                      </div>
+                      <Month month={currenMonth} eventSchedule={eventSchedule} />
+                    </div>
                   )
                 }
               </>

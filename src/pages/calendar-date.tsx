@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { useSelector } from '@/redux/store';
@@ -23,6 +23,7 @@ import { monthArrayToRangeTime } from '@/utils/rangeTimeStamp';
 import { compareSameDay } from '@/utils/compareDayjs';
 import { useAccount } from 'wagmi';
 import EmptyCalendarCard from '@/components/card/EmptyCalendarCard';
+import { destructureEventSchedules } from '@/utils/destructureEventSchedules';
 
 const CalendarDate = () => {
   const [scheduleInnerHeight, setScheduleInnerHeight] = useState<number>(0);
@@ -31,7 +32,9 @@ const CalendarDate = () => {
   const [dayEvents, setDayEvents] = useState<EventSchedule[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [eventHandlerSuccess, setEventHandlerSuccess] = useState<string>('');
+  const { calendarIndex, calendarTitle } = useParams<EventParams>()
 
+  const { pathname } = useLocation();
   const { isConnected } = useAccount();
   const dispatch = useDispatch();
   const rangeTime = useSelector(rangeTimeData);
@@ -54,23 +57,35 @@ const CalendarDate = () => {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-      const data =  await calendarContract.getEventSchedule(0, rangeTime);
-      const destructureEventSchedules: EventSchedule[] = data[2].map((event: any) => ({
-        id: Number(event[0]),
-        start_event: Number(event[1]),
-        end_event: Number(event[2]),
-        title: event[3],
-      }));
+      if (rangeTime) {
+        const location = pathname.split('/')[2];
+        const atParticipationPage = location === 'participation';
+        let eventSchedules: EventSchedule[] = [];
+        setLoading(true);
 
-      const eventEachDay = destructureEventSchedules.filter(
-        (evt) => compareSameDay(evt.start_event, date!)
-      );
-
-      setDayEvents(eventEachDay);
-      setLoading(false);
+        if (atParticipationPage) {
+          const calendarEventTitle = calendarTitle?.replaceAll('-', ' ');
+          const data = await calendarContract.getParticipationStore(
+            calendarIndex, 
+            calendarEventTitle, 
+            rangeTime
+          );
+          eventSchedules = await destructureEventSchedules(data);
+        }
+        else {
+          const data =  await calendarContract.getEventSchedule(calendarIndex, rangeTime);
+          eventSchedules = await destructureEventSchedules(data);
+        }
+  
+        const eventEachDay = eventSchedules.filter(
+          (evt) => compareSameDay(evt.start_event, date!)
+        );
+  
+        setDayEvents(eventEachDay);
+        setLoading(false);
+      }
     })();
-  }, [signer, rangeTime, eventHandlerSuccess, date])
+  }, [signer, rangeTime, eventHandlerSuccess, date, pathname])
 
   const getHandlerSuccess = (hash: string) => {
     setEventHandlerSuccess(hash);

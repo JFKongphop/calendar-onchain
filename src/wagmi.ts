@@ -10,16 +10,17 @@ import { calendarABI } from '@/abi/calendar';
 import { CALENDAR_ADDRESS, CALENDAR_HOLESKY } from './configs/enviroment';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [goerli, holesky],
+  [holesky],
   [publicProvider()]
 );
  
 export const walletClientToSigner = (walletClient: WalletClient) => {
   const { account, chain, transport } = walletClient;
+  // console.log(chain)
   const network = {
-    chainId: chain.id,
-    name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
+    chainId: holesky.id,
+    name: holesky.name,
+    ensAddress: holesky.contracts.multicall3.address// chain.contracts?.ensRegistry?.address,
   };
 
   const provider = new providers.Web3Provider(transport, network);

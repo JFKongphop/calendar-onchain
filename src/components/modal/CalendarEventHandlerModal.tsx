@@ -20,7 +20,7 @@ interface ICalendarEventHandlerModal {
   onChangeTitleSuccess: (hash: string) => void;
 }
 
-export interface IEditTile<> {
+export interface IEditTile {
   input: string;
 }
 
@@ -54,6 +54,7 @@ const CalendarEventHandlerModal: FC<ICalendarEventHandlerModal> = ({
 
 
   const closeModalHandler = () => {
+    setErrorInput({ status: false, message: '' });
     reset(defaultValues);
     onCloseModal();
   }
@@ -109,13 +110,6 @@ const CalendarEventHandlerModal: FC<ICalendarEventHandlerModal> = ({
   }
 
   const removeAccountHandlder = async (address: string) => {
-    if (address !== 'all') {
-      return  setErrorInput({
-        status: true,
-        message: 'please fill address'
-      });
-    }
-
     setErrorInput({ status: false, message: '' });
     setChangeLoading((loading) => !loading);
     setMessageReturn('deleting in process');
@@ -138,7 +132,7 @@ const CalendarEventHandlerModal: FC<ICalendarEventHandlerModal> = ({
 
   const onSubmit = async ({ input }: IEditTile) => {
     try {
-      if (type === 'edit name') return await changeTitleHandler(input);
+      if (type === 'edit title') return await changeTitleHandler(input);
       else if (type === 'invite') return await inviteAccountHandler(input);
       else if (type === 'delete account') return await removeAccountHandlder(input);
     }
@@ -154,7 +148,7 @@ const CalendarEventHandlerModal: FC<ICalendarEventHandlerModal> = ({
 
   const input = watch('input');
   useEffect(() => {
-    if (calendarEventData && type === 'edit name') {
+    if (calendarEventData && type === 'edit title') {
       setErrorInput({ 
         status: input === calendarEventData.title, 
         message: 'please change another name!' 

@@ -27,7 +27,7 @@ const CalendarEvent = () => {
   const [eventTitle, setEventTitle] = useState<EventTitle>();
   const [participationEventTitle, setParticipationEventTitle] = useState<EventParticipationTitle>();
   const [currentCalendarIndex, setCurrentCalendarIndex] = useState<number>(0);
-  const [calendarHandlerType, setCalendarHandlerType] = useState<CalendarHandler>('edit name');
+  const [calendarHandlerType, setCalendarHandlerType] = useState<CalendarHandler>('edit title');
   const [changeTitleSuccess, setChangeTitleSuccess] = useState<string>('');
   const [leaveParticipationEventSuccess, setLeaveParticipationEventSuccess] = useState<string>('');
   const [showCreateEventModal, setShowEventModal] = useState<boolean>(false);
@@ -74,43 +74,35 @@ const CalendarEvent = () => {
     setLeaveParticipationEventSuccess(hash);
   }
 
-  if (isConnected) {
-    useEffect(() => {
-      (async () => {
-        setLoadingEventTitles(true);
-        const data = await calendarContract.getEventTitle();
-        console.log(data)
-        const eventTitles: EventTitle[] = data.map((event: any, index: number) => ({
-          title: event[0],
-          parctitipationAmount: Number(event[1]),
-          parctitipationAccount: event[2],
-        }));
-        setEventTitles(eventTitles);
-        setLoadingEventTitles(false);
-      })();
-    }, [signer, changeTitleSuccess]);
-    
-    useEffect(() => {
-      (async () => {
-        setLoadingParticipationTitles(true);
-        const data = await calendarContract.getParticipationTitle();
-        const eventParticipationTitles: EventParticipationTitle[] = data.map((event: any) => ({
-          title: event[0],
-          calendarIndex: Number(event[1]),
-          createdBy: event[2],
-        }));
-        setEventParticipationTitles(eventParticipationTitles);
-        setLoadingParticipationTitles(false);
-      })();
-    }, [signer, leaveParticipationEventSuccess]);
-  }
+  useEffect(() => {
+    (async () => {
+      setLoadingEventTitles(true);
+      const data = await calendarContract.getEventTitle();
+      const eventTitles: EventTitle[] = data.map((event: any, index: number) => ({
+        title: event[0],
+        parctitipationAmount: Number(event[1]),
+        parctitipationAccount: event[2],
+      }));
+      setEventTitles(eventTitles);
+      setLoadingEventTitles(false);
+    })();
+  }, [signer, changeTitleSuccess]);
 
   useEffect(() => {
     (async () => {
-      const data =  await calendarContract.getEventSchedule(0, "1701363600000-1704041999999")
-      console.log(data)
-    })()
-  }, [signer])
+      setLoadingParticipationTitles(true);
+      const data = await calendarContract.getParticipationTitle();
+      const eventParticipationTitles: EventParticipationTitle[] = data.map((event: any) => ({
+        title: event[0],
+        calendarIndex: Number(event[1]),
+        createdBy: event[2],
+      }));
+      setEventParticipationTitles(eventParticipationTitles);
+      setLoadingParticipationTitles(false);
+    })();
+  }, [signer, leaveParticipationEventSuccess]);
+
+  console.log(eventParticipationTitles)
 
   return (
     <>

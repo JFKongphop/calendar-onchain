@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 import { addDaySelected } from "@/redux/slice/daySelected.slice";
@@ -8,35 +8,51 @@ import ShortEventList from "@/components/card/ShortEventList";
 
 import { compareSameDay } from "@/utils/compareDayjs";
 
-import type { FC } from "react";
+import { useState, type FC, useEffect } from "react";
 import type { Dayjs } from "dayjs";
 import type { EventSchedule, EventParams } from "@/type";
 
 
 interface IDay {
   day: Dayjs;
-  rowIdx: number;
   eventSchedule: EventSchedule[];
 }
 
 const Day:FC<IDay> = ({ 
   day, 
-  rowIdx,
   eventSchedule,
 }) => {
+  const [atParticipationPage, setAtParticipationPage] = useState<boolean>(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
   const { calendarIndex, calendarTitle } = useParams<EventParams>()
 
   const dayEvents: EventSchedule[] = eventSchedule.filter(
     (evt) => compareSameDay(evt.start_event, day)
   )
+
+  useEffect(() => {
+    const location = pathname.split('/')[2];
+    const atParticipationPage = location === 'participation';
+    setAtParticipationPage(atParticipationPage);
+  }, [pathname])
+
   
   const dateEventHandler = () => {
     dispatch(addDaySelected(day))
     const datePage = dayjs(day).format('MMM-DD-YYYY').toLowerCase()
-  
-    navigate(`/calendar-event/${calendarIndex}/${calendarTitle}/date/${datePage}`);
+
+    let terminalURL = '';
+    if (atParticipationPage) {
+      terminalURL = `/calendar-event/participation/${calendarIndex}/${calendarTitle}/date/${datePage}`;
+    }
+    else {
+      terminalURL = `/calendar-event/${calendarIndex}/${calendarTitle}/date/${datePage}`
+    }
+
+    navigate(terminalURL);
   }
 
   const getCurrentDayClass = () => {
@@ -50,35 +66,27 @@ const Day:FC<IDay> = ({
       className="border border-t-0 border-l-0 border-r-2 border-b-2 border-calendar-main-theme flex flex-col"
     >
       <header className="flex flex-col items-center" >
-        {rowIdx === 0 && (
-          <p className="text-sm mt-1">
-            {(day as any).format("ddd").toUpperCase()}
-          </p>
-        )}
         <p
           className={`text-sm p-1 my-1 text-center ${getCurrentDayClass()}`}
         >
-          {(day as any).format("DD")}
+          {day.format("DD")}
         </p>
       </header>
       <div
-        className="flex-1 flex flex-col gap-[2px] cursor-pointer"
+        className="flex-1 flex flex-col gap-[2px] cursor-pointer relative"
         onClick={dateEventHandler}
       >
-        {dayEvents.slice(0, 3).map((
-          event, 
-          index
-        ) => (
+        {dayEvents.slice(0, 3 ).map((event, index) => (
           <ShortEventList 
             key={index} 
             title={event.title} 
           />
         ))}
-        {dayEvents && dayEvents.length > 3 && 
+        {dayEvents && dayEvents.length > 2 && 
           <p 
-            className="text-calendar-main-theme px-1 text-[14px]"
+            className="absolute bottom-0.5 left-1 text-xs font-bold text-calendar-main-theme"
           >
-            ...เพิ่มเติม
+            ...more
           </p>
         }
       </div>

@@ -68,6 +68,10 @@ const EventList: FC<IEventList> = ({
     setShowConsoleTimeDuration(false);
   }
 
+  const toggleConsoleTimeDuration = () => {
+    setShowConsoleTimeDuration((prevShow) => !prevShow);
+  }
+
   const getTimeDurationHandlerType = (type: TimeDurationHandler) => {
     settimeDurationHandlerType(type);
   }  
@@ -87,7 +91,7 @@ const EventList: FC<IEventList> = ({
         eventScheduleData={eventSchedule}
         type={timeDurationHandlerType}
         showModal={showConsoleTimeDuration}
-        onCloseModal={closeConsoleTimeDuration}
+        onCloseModal={toggleConsoleTimeDuration}
         onHandlerSuccess={onHandlerSuccess}
       />
       <div 
@@ -96,7 +100,7 @@ const EventList: FC<IEventList> = ({
         <div className=" absolute top-2 right-0 flex flex-row items-center gap-2">
           <TimeDurationHandlerDropdown 
             onGetTimeDurationHandlerType={getTimeDurationHandlerType}
-            onToggleConsoleTimeDuration={openConsoleTimeDuration}
+            onToggleConsoleTimeDuration={toggleConsoleTimeDuration}
           />
         </div>
         <p

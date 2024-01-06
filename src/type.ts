@@ -18,7 +18,7 @@ export type EventParticipationTitle = {
   createdBy: Address;
 }
 
-export type CalendarHandler = 'edit name' | 'invite' | 'delete account';
+export type CalendarHandler = 'edit title' | 'invite' | 'delete account';
 
 export type TimeDurationHandler = 'edit' | 'remove';
 

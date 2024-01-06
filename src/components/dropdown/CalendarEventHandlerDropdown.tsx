@@ -5,7 +5,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import type { FC } from "react";
 import type { CalendarHandler } from "@/type";
 
-const functionHandlers: CalendarHandler[] = ['edit name', 'invite', 'delete account']
+const functionHandlers: CalendarHandler[] = ['edit title', 'invite', 'delete account']
 
 interface ICalendarEventHandlerDropdown {
   onGetCalendarHandlerType: (type: CalendarHandler) => void;
