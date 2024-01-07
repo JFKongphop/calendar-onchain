@@ -78,7 +78,7 @@ const CalendarEvent = () => {
     (async () => {
       setLoadingEventTitles(true);
       const data = await calendarContract.getEventTitle();
-      const eventTitles: EventTitle[] = data.map((event: any, index: number) => ({
+      const eventTitles: EventTitle[] = data.map((event: any) => ({
         title: event[0],
         parctitipationAmount: Number(event[1]),
         parctitipationAccount: event[2],
