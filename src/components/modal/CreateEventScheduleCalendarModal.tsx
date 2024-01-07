@@ -52,7 +52,7 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
     if (date && showModal) {
       setDaySelectorEvent(dayjs(date))
     }
-  }, [])
+  }, [showModal])
 
   useEffect(() => {
     const [startMonthCalendar, endMonthCalendar] = rangeTime.split('-').map((range) => Number(range));
