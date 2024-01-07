@@ -8,7 +8,7 @@ import ShortEventList from "@/components/card/ShortEventList";
 
 import { compareSameDay } from "@/utils/compareDayjs";
 
-import { useState, type FC, useEffect } from "react";
+import { useState, type FC, useEffect, useRef, useLayoutEffect } from "react";
 import type { Dayjs } from "dayjs";
 import type { EventSchedule, EventParams } from "@/type";
 
@@ -23,6 +23,7 @@ const Day:FC<IDay> = ({
   eventSchedule,
 }) => {
   const [atParticipationPage, setAtParticipationPage] = useState<boolean>(false);
+  const [scheduleInnerHeight, setScheduleInnerHeight] = useState<number>(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,6 +33,14 @@ const Day:FC<IDay> = ({
   const dayEvents: EventSchedule[] = eventSchedule.filter(
     (evt) => compareSameDay(evt.start_event, day)
   )
+
+  const scheduleInnerRef = useRef<any>();
+  useLayoutEffect(() => {
+    if (scheduleInnerRef.current) {
+      const divHeight = scheduleInnerRef.current.offsetHeight;
+      setScheduleInnerHeight(divHeight / 5.5);
+    }
+  }, []);
 
   useEffect(() => {
     const location = pathname.split('/')[2];
@@ -64,6 +73,7 @@ const Day:FC<IDay> = ({
   return (
     <div 
       className="border border-t-0 border-l-0 border-r-2 border-b-2 border-calendar-main-theme flex flex-col"
+      ref={scheduleInnerRef}
     >
       <header className="flex flex-col items-center" >
         <p
@@ -76,13 +86,14 @@ const Day:FC<IDay> = ({
         className="flex-1 flex flex-col gap-[2px] cursor-pointer relative"
         onClick={dateEventHandler}
       >
-        {dayEvents.slice(0, 3 ).map((event, index) => (
+        {dayEvents.slice(0, 3).map((event, index) => (
           <ShortEventList 
-            key={index} 
+            key={index}
             title={event.title} 
+            height={scheduleInnerHeight}          
           />
         ))}
-        {dayEvents && dayEvents.length > 2 && 
+        {dayEvents && dayEvents.length > 3 && 
           <p 
             className="absolute bottom-0.5 left-1 text-xs font-bold text-calendar-main-theme"
           >
