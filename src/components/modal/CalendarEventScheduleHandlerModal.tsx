@@ -96,7 +96,7 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
       : endEvent;
 
     const data = await calendarContract.editEventSchedule(
-      calendarIndex,
+      Number(calendarIndex),
       id,
       newStartEvent,
       newEndEvent,

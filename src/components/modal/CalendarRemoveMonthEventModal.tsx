@@ -48,7 +48,10 @@ const CalendarRemoveMonthEventModal: FC<ICalendarRemoveMonthEventModal> = ({
       setErrorInput({ status: false, message: '' });
       setChangeLoading((loading) => !loading);
       setMessageReturn('removing in process');
-      const data = await calendarContract.deleteEventScheduleMonth(calendarIndex, rangeTime);
+      const data = await calendarContract.deleteEventScheduleMonth(
+        Number(calendarIndex), 
+        rangeTime
+      );
 
       setMessageReturn('removed successfully and waiting for set data...');
       await data.wait();

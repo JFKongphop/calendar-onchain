@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -8,7 +9,7 @@ import ShortEventList from "@/components/card/ShortEventList";
 
 import { compareSameDay } from "@/utils/compareDayjs";
 
-import { useState, type FC, useEffect, useRef, useLayoutEffect } from "react";
+import type { FC, ElementRef  } from "react";
 import type { Dayjs } from "dayjs";
 import type { EventSchedule, EventParams } from "@/type";
 
@@ -34,11 +35,11 @@ const Day:FC<IDay> = ({
     (evt) => compareSameDay(evt.start_event, day)
   )
 
-  const scheduleInnerRef = useRef<any>();
+  const scheduleInnerRef = useRef<ElementRef<'div'>>(null);
   useLayoutEffect(() => {
     if (scheduleInnerRef.current) {
       const divHeight = scheduleInnerRef.current.offsetHeight;
-      setScheduleInnerHeight(divHeight / 5.5);
+      setScheduleInnerHeight(divHeight / 6);
     }
   }, []);
 
@@ -75,7 +76,7 @@ const Day:FC<IDay> = ({
       className="border border-t-0 border-l-0 border-r-2 border-b-2 border-calendar-main-theme flex flex-col"
       ref={scheduleInnerRef}
     >
-      <header className="flex flex-col items-center" >
+      <header className="flex flex-col items-center">
         <p
           className={`text-sm p-1 my-1 text-center ${getCurrentDayClass()}`}
         >
@@ -95,9 +96,9 @@ const Day:FC<IDay> = ({
         ))}
         {dayEvents && dayEvents.length > 3 && 
           <p 
-            className="absolute bottom-0.5 left-1 text-xs font-bold text-calendar-main-theme"
+            className="absolute bottom-0 left-1 text-[10px] font-bold text-calendar-main-theme"
           >
-            ...more
+            more...
           </p>
         }
       </div>

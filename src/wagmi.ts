@@ -7,7 +7,8 @@ import { ethers, providers } from 'ethers'
 import type { WalletClient } from 'wagmi'
 
 import { calendarABI } from '@/abi/calendar';
-import { CALENDAR_ADDRESS, CALENDAR_HOLESKY } from './configs/enviroment';
+import { CALENDAR_HOLESKY } from './configs/enviroment';
+import { ContractCalendarType } from './type';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [holesky],
@@ -38,7 +39,7 @@ export const useEthersSigner = ({ chainId }: { chainId?: number } = {}) => {
   );
 };
 
-export const useContractCalendar = () => {
+export const useContractCalendar = (): ContractCalendarType => {
   const signer = useEthersSigner();
   const calendarContract = new ethers.Contract(
     CALENDAR_HOLESKY,
@@ -46,10 +47,8 @@ export const useContractCalendar = () => {
     signer
   );
 
-  return calendarContract;
+  return calendarContract as unknown as ContractCalendarType;
 };
-
-console.log(CALENDAR_HOLESKY)
 
 export const config = createConfig({
   autoConnect: true,

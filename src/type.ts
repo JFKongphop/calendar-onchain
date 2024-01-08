@@ -51,7 +51,7 @@ export type EventStoreRetrived = {
   eventSchedules: EventSchedule[];
 }
 
-export type ContractType = {
+export type ContractCalendarType = {
   addEventSchedule: (
     id: number, 
     start_event: number, 

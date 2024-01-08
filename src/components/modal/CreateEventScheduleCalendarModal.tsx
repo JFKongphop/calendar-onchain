@@ -119,8 +119,8 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
         id,
         startEvent,
         endEvent,
-        calendarIndex,
-        calendarEventTitle,
+        Number(calendarIndex),
+        calendarEventTitle!,
         title,
         rangeTime,
       );

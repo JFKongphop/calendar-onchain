@@ -66,14 +66,14 @@ const CalendarDate = () => {
         if (atParticipationPage) {
           const calendarEventTitle = calendarTitle?.replaceAll('-', ' ');
           const data = await calendarContract.getParticipationStore(
-            calendarIndex, 
-            calendarEventTitle, 
+            Number(calendarIndex), 
+            calendarEventTitle!, 
             rangeTime
           );
           eventSchedules = await destructureEventSchedules(data);
         }
         else {
-          const data =  await calendarContract.getEventSchedule(calendarIndex, rangeTime);
+          const data =  await calendarContract.getEventSchedule(Number(calendarIndex), rangeTime);
           eventSchedules = await destructureEventSchedules(data);
         }
   
