@@ -102,7 +102,7 @@ const CalendarEvent = () => {
     })();
   }, [signer, leaveParticipationEventSuccess]);
 
-  console.log(eventParticipationTitles)
+  console.log(eventTitles)
 
   return (
     <>

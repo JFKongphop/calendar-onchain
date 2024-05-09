@@ -269,7 +269,7 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
                         </div>
                         <div className="w-full gap-2 flex flex-col">
                           <label 
-                            className="flex justify-start items-center text-md"
+                            className="flex justify-start items-center text-md font-bold"
                           >
                             Title
                           </label>
@@ -303,16 +303,19 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
                     &&
                     (
                       <div 
-                        className="flex flex-row items-center absolute bottom-16 text-calendar-main-theme font-semibold text-xs gap-1"
+                        className="flex flex-row items-center absolute bottom-[60px] text-calendar-main-theme font-semibold text-xs gap-1"
                       >
-                        <LoadingOutlined
-                          style={{
-                            fontSize: 10,
-                            color: '#1e293b',
-                          }}
-                          spin
-                          rev={undefined}
-                        />
+                        <div className="flex items-center">
+                          <LoadingOutlined
+                            style={{
+                              fontSize: 10,
+                              color: '#1e293b',
+                            }}
+                            spin
+                            rev={undefined}
+                          />
+
+                        </div>
                         <p>{messageReturn}</p>
                       </div>
                     )
@@ -322,7 +325,7 @@ const CalendarEventScheduleHandlerModal: FC<ICalendarEventScheduleHandlerModal> 
                     &&
                     (
                       <div 
-                        className="absolute bottom-16 text-red-500 font-semibold text-xs"
+                        className="absolute bottom-[60px] text-red-500 font-semibold text-xs"
                       >
                         {errorInput.message}
                       </div>

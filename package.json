@@ -17,6 +17,7 @@
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
     "@hookform/resolvers": "^2.6.0",
+    "@pinata/sdk": "^2.1.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@wagmi/core": "^1.4.12",
     "antd": "^5.4.7",

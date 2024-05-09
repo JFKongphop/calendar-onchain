@@ -41,7 +41,7 @@ const TimeEventInput: FC<ITimeEventInput> = ({
 
   return (
     <div className="flex flex-row justify-between items-center">
-      <p>{title}</p>
+      <p className="font-bold">{title}</p>
       <div className="flex flex-row gap-2 relative">
         <div className="flex flex-row">
           <div 

@@ -10,7 +10,12 @@ Object.entries(ENV).map((env) => {
 });
 
 // env name variable
-export const { VITE_API_ENDPOINT } = parseENV;
+export const { 
+  VITE_API_ENDPOINT,
+  VITE_PINATA_API_KEY, 
+  VITE_PINATA_API_SECRET, 
+  VITE_PINATA_JWT 
+} = parseENV;
 const { VITE_CALENDAR_ADDRESS, VITE_HOLESKY_ADDRESS } = parseENV;
 export const CALENDAR_ADDRESS = VITE_CALENDAR_ADDRESS as Address
 export const CALENDAR_HOLESKY = VITE_HOLESKY_ADDRESS as Address

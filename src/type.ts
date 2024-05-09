@@ -8,6 +8,7 @@ import { ShortMonth } from "./utils/shortMonthToNumber";
 
 export type EventTitle = {
   title: string;
+  coverImage: string;
   parctitipationAmount: number;
   parctitipationAccount: Address[];
 }

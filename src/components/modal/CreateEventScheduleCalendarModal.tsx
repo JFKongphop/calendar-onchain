@@ -55,7 +55,6 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
   }, [showModal])
 
   useEffect(() => {
-    const [startMonthCalendar, endMonthCalendar] = rangeTime.split('-').map((range) => Number(range));
     const rangeTimeArray = monthArrayToRangeTime(monthIndex);
     dispatch(addRangeTime(rangeTimeArray));
   }, [monthIndex])
@@ -196,7 +195,7 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                 className="flex w-[400px] h-auto transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl"
               >
                 <div 
-                  className="relative flex flex-col w-full items-center overflow-hidden bg-white p-4 rounded-xl gap-6"
+                  className="relative flex flex-col w-full items-center overflow-hidden bg-white p-4 rounded-xl gap-2"
                 >
                   <div 
                     className="flex flex-row justify-between items-center w-full border-b-2 border-calendar-main-theme pb-2"
@@ -213,13 +212,13 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                   <div
                     className="w-full text-md flex flex-row justify-between relative"
                   >
-                    <p>Date</p>
+                    <p className="font-bold">Date</p>
                     <p>{daySelectorEvent.format("dddd, DD MMMM YYYY")}</p>
                   </div>
                   
                   <div className="w-full gap-2 flex flex-col">
                     <label 
-                      className="flex justify-start items-center text-md"
+                      className="flex justify-start items-center text-md font-bold"
                     >
                       Title
                     </label>
@@ -251,38 +250,41 @@ const CreateEventScheduleCalendarModal: FC<ICreateEventScheduleCalendarModal> = 
                     onDaySelected={getDaySelectedHandler}
                     daySelectedEvent={daySelectorEvent}
                   />
-                  {
-                    changeLoading
-                    &&
-                    (
-                      <div 
-                        className="absolute bottom-[60px] text-xs flex flex-row gap-1"
-                      >
-                        <div className="flex items-center">
-                          <LoadingOutlined
-                            style={{
-                              fontSize: 10,
-                              color: '#1e293b',
-                            }}
-                            spin
-                            rev={undefined}
-                          />
+                  <div className="w-full flex justify-center py-1">
+                    {
+                      changeLoading
+                      &&
+                      (
+                        <div 
+                          className="absolute bottom-[60px] text-xs flex flex-row gap-1"
+                        >
+                          <div className="flex items-center">
+                            <LoadingOutlined
+                              style={{
+                                fontSize: 10,
+                                color: '#1e293b',
+                              }}
+                              spin
+                              rev={undefined}
+                            />
+                          </div>
+                          <p>{messageReturn}</p>
+                        </div>                    
+                      )
+                    }
+                    {
+                      errorInput.status
+                      &&
+                      (
+                        <div 
+                          className="absolute bottom-[60px] text-red-500 font-semibold text-xs"
+                        >
+                          {errorInput.message}
                         </div>
-                        <p>{messageReturn}</p>
-                      </div>                    
-                    )
-                  }
-                  {
-                    errorInput.status
-                    &&
-                    (
-                      <div 
-                        className="absolute bottom-[60px] text-red-500 font-semibold text-xs"
-                      >
-                        {errorInput.message}
-                      </div>
-                    )
-                  }
+                      )
+                    }
+
+                  </div>
                   <div className="w-full">
                     <CreateEventButton 
                       title={'Create Event'}
